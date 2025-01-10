@@ -62,7 +62,7 @@ function Vector2:__tostring()
     if not self then
         error("Invalid argument for Vector2 tostring")
     end
-    return string.format("Vector2: (%f, %f)", self.x, self.y)
+    return string.format("Vector2(%f, %f)", self.x, self.y)
 end
 
 

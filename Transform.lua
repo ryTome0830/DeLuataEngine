@@ -1,13 +1,14 @@
+local Component = require("abstruct.Component").Component
 local Vector2 = require("Vector2").Vector2
 
---- @class Transform Transformクラスオブジェクトの位置、回転、スケールを定義します
+--- @class Transform:Component Transformクラスオブジェクトの位置、回転、スケールを定義します
 --- @field object Object
 --- @field pos Vector2
 --- @field rotation number
 --- @field scale Vector2
 --- @field parent Transform
 --- @field children Transform[]
-local Transform = {}
+local Transform = Component:extend()
 Transform.__index = Transform
 
 --- Transformコンストラクタ
@@ -34,6 +35,8 @@ end
 --- @param rotation number
 --- @param scale Vector2
 function Transform:init(object, pos, rotation, scale)
+    -- スーパークラスの初期化
+    self.super:init()
     self.object = object
     self.pos = pos
     self.rotation = rotation
@@ -133,3 +136,16 @@ function Transform:getWorldScale()
     end
     return scale
 end
+
+-- ==========override==========
+
+--- Transformクラスは無向化不可能
+--- @private
+function Transform:setActive(active)
+    print("Transform does not allow enable to be false!")
+end
+
+
+return{
+    Transform=Transform
+}
