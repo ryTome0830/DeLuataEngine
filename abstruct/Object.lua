@@ -48,7 +48,7 @@ function Object:extend()
         end
     end
     -- clsのメタテーブル__indexにclsを設定
-    --cls.__index = cls
+    cls.__index = cls
     -- 親クラスの参照を保持
     cls.super = self
     -- cls

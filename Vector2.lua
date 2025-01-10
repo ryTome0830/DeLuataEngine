@@ -1,4 +1,6 @@
 --- @class Vector2 Vector2クラス
+--- @field x number x座標
+--- @field y number y座標
 local Vector2 = {}
 Vector2.__index = Vector2
 
