@@ -3,25 +3,26 @@ local Object = require("abstruct.Object").Object
 --- このクラスは抽象クラスです。サブクラスでメソッドを実装する必要があります。
 --- @class Component:Object Component抽象クラス
 --- @field object Object アタッチされるオブジェクト
---- @field private enabled boolean コンポーネントの有効化/無効化
+--- @field enabled boolean コンポーネントの有効化/無効化
 local Component = Object:extend()
 Component.__index = Component
 
---- Componentコンストラクタ
---- @param object Object
-function Component.new(object)
-    --- @class Component
-    local self = setmetatable({}, Component)
-    
-end
+-- --- Componentコンストラクタ
+-- --- @param object Object
+-- function Component.new(object)
+--     --- @class Component
+--     local instance = setmetatable({}, Component)
+--     instance:init(object)
+--     return instance
+-- end
 
---- 初期化処理
---- @private
---- @param object Object
-function Component:init(object)
-    self.object = object
-    self.enabled = true
-end
+-- --- 初期化処理
+-- --- @private
+-- --- @param object Object
+-- function Component:init(object)
+--     self.object = object
+--     self.enabled = true
+-- end
 
 
 -- ========== metamethod ==========
@@ -70,3 +71,7 @@ function Component:setActive(active)
         self:onDisable()
     end
 end
+
+return{
+    Component=Component
+}

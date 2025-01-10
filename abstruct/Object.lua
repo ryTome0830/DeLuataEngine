@@ -10,19 +10,19 @@ This Object base class implementation was taken from SNKRX (MIT license)
 local Object = {}
 Object.__index = Object
 
---- コンストラクタ
---- @return Object
-function Object.new()
-    --- @class Object
-    local instance = setmetatable({}, Object)
-    instance:init()
-    return instance
-end
+-- --- コンストラクタ
+-- --- @return Object
+-- function Object.new()
+--     --- @class Object
+--     local instance = setmetatable({}, Object)
+--     instance:init()
+--     return instance
+-- end
 
---- 初期化処理
---- @private
-function Object:init()
-end
+-- --- 初期化処理
+-- --- @private
+-- function Object:init()
+-- end
 
 
 -- ========== metamethod ==========
