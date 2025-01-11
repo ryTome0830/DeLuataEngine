@@ -1,0 +1,2 @@
+-- GameObject
+GAMEOBJECT_MAX_NUM = 100

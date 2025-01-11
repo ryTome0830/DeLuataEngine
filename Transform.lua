@@ -113,6 +113,12 @@ function Transform:removeChild(childTransform)
     end
 end
 
+--- 子を取得
+--- @return GameObject[]
+function Transform:getChild()
+    return self.children
+end
+
 --- ワールド座標を取得
 --- @return Vector2
 function Transform:getWorldPosition()
