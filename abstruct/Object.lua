@@ -8,26 +8,25 @@ This Object base class implementation was taken from SNKRX (MIT license)
 
 --- @class Object
 --- @field super Object スーパークラスの参照
---- @field private enabled boolean オブジェクトの有効化無向化
+--- @field _enabled boolean オブジェクトの有効化無向化
 local Object = {}
 Object.__index = Object
 
---- コンストラクタ
---- @private
---- @return Object
-function Object.new()
-    --- @class Object
-    local instance = setmetatable({}, Object)
-    instance:init()
-    return instance
-end
+-- --- コンストラクタ
+-- --- @private
+-- --- @return Object
+-- function Object.new()
+--     --- @class Object
+--     local instance = setmetatable({}, Object)
+--     instance:init()
+--     return instance
+-- end
 
 --- 初期化処理
 --- @protected
 function Object:init()
-    --- @protected
-    self.enabled = true
-    print("Object:init called, enabled = " .. tostring(self.enabled))
+    --print("Object:init called")
+    self._enabled = true
 end
 
 
@@ -46,6 +45,7 @@ end
 --- @return table
 function Object:extend()
     -- 新しいクラスclsを作成
+    --- @class Object
     local cls = {}
     -- Objectクラスの'__'で始まるプロパティをコピー
     for k, v in pairs(self) do

@@ -2,11 +2,14 @@ local Component = require("abstruct.Component").Component
 local Vector2 = require("Vector2").Vector2
 
 --- @class Transform:Component Transformクラスオブジェクトの位置、回転、スケールを定義します
---- @field object Object
---- @field pos Vector2
---- @field rotation number
---- @field scale Vector2
---- @field parent Transform
+--- 継承
+--- @field super Component
+--- @field private object Object
+--- Transformメンバ
+--- @field pos Vector2 二次元平面座標
+--- @field rotation number 回転
+--- @field scale Vector2 スケール
+--- @field parent Transform 親オブジェクト
 --- @field children Transform[]
 local Transform = Component:extend()
 Transform.__index = Transform
@@ -36,7 +39,8 @@ end
 --- @param scale Vector2
 function Transform:init(object, pos, rotation, scale)
     -- スーパークラスの初期化
-    self.super:init()
+    self.super:init(object)
+    --- @private
     self.object = object
     self.pos = pos
     self.rotation = rotation
@@ -50,6 +54,15 @@ end
 function Transform:__tostring()
     return string.format("Transform(pos: %s, rotation: %f, scale: %s)",
         tostring(self.pos), self.rotation, tostring(self.scale))
+end
+
+--- enableへのアクセスを制御する
+function Transform:__newindex(key, value)
+    if key == "_enabled" then
+        error("Transform cannot be disabled.")
+    else
+        rawset(self, key, value)
+    end
 end
 
 
@@ -139,11 +152,6 @@ end
 
 -- ==========override==========
 
---- Transformクラスは無向化不可能
---- @private
-function Transform:setActive(active)
-    print("Transform does not allow enable to be false!")
-end
 
 
 return{
