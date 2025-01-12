@@ -1,5 +1,5 @@
 local Input = require("Input").Input
-local Log = require("Log").Log
+local Log = require("LogManager").Log
 --local SceneManager = require("SceneManger").SceneManager
 local Transform = require("Transform").Transform
 local Vector2 = require("Vector2").Vector2

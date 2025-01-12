@@ -8,7 +8,7 @@ This Object base class implementation was taken from SNKRX (MIT license)
 
 --- @class Object
 --- @field super Object スーパークラスの参照
---- @field _enabled boolean オブジェクトの有効化無向化
+--- @field private _enabled boolean オブジェクトの有効化無向化
 local Object = {}
 Object.__index = Object
 
@@ -26,6 +26,7 @@ Object.__index = Object
 --- @protected
 function Object:init()
     --print("Object:init called")
+    --- @private
     self._enabled = true
 end
 
@@ -38,6 +39,20 @@ function Object:__tostring()
     return "Object"
 end
 
+function Object:__newindex(key, value)
+    if key == "_enabled" then
+        if value == true and not self._enabled then
+            self:onEnable()
+        elseif value == false and self._enabled then
+            self:onDisable()
+        elseif value ~= true and value ~= false then
+            error("The argument is wrong! '_enabled' must be a boolean value!")
+        end
+        rawset(self, key, value)
+    else
+        rawset(self, key, value)
+    end
+end
 
 -- ========== DeLuataEngine ==========
 
@@ -67,13 +82,71 @@ end
 --- @return boolean
 function Object:is(T)
     local mt = getmetatable(self)
-    while mt do
+    while mt ~= nil do
         if mt == T then
             return true
         end
         mt = getmetatable(mt)
     end
     return false
+end
+
+--- オブジェクトの状態を返す
+--- @return boolean
+function Object:isEnable()
+    return self._enabled
+end
+
+--- オブジェクトの状態を変更する
+--- @param enabled boolean
+function Object:setEnabled(enabled)
+    -- 状態がすでに_enabledと同じときスルー
+    if self._enabled == enabled then return end
+
+    -- _enabledを切り替えてコールバック関数を呼び出す
+    self._enabled = enabled
+    if self._enabled then
+        self:onEnable()
+    else
+        self:onDisable()
+    end
+end
+
+-- ========== DeLuataEngine ==========
+
+--- 開始処理
+function Object:load()
+end
+
+--- 更新処理
+--- @param dt number フレーム時間love.update(dt)
+function Object:update(dt)
+end
+
+--- 描画処理
+function Object:draw()
+end
+
+--- オブジェクトの破棄
+function Object:Destroy()
+    self:onDestroy()
+end
+
+-- ==========CallBacks==========
+
+--- 有効化時のコールバック関数
+--- @private
+function Object:onEnable()
+end
+
+--- 無効化時のコールバック関数
+--- @private
+function Object:onDisable()
+end
+
+--- 破棄時のコールバック関数
+--- @private
+function Object:onDestroy()
 end
 
 return {

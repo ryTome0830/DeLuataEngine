@@ -115,6 +115,11 @@ function Vector2:rotate(angle)
     return Vector2.new(self.x * cos - self.y * sin, self.x * sin + self.y * cos)
 end
 
+--- Vector2のクローンを作成
+--- @return Vector2
+function Vector2:clone()
+    return Vector2.new(self.x, self.y)
+end
 
 return {
     Vector2=Vector2,
