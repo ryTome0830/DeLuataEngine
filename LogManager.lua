@@ -14,7 +14,7 @@ function LogManager.new()
         --- @class LogManager
         local instance = setmetatable({}, LogManager)
         instance:init()
-        
+
         singleton_object = instance
     end
     return singleton_object

@@ -91,6 +91,9 @@ function Object:is(T)
     return false
 end
 
+
+-- ========== DeLuataEngine ==========
+
 --- オブジェクトの状態を返す
 --- @return boolean
 function Object:isEnable()
@@ -98,21 +101,19 @@ function Object:isEnable()
 end
 
 --- オブジェクトの状態を変更する
---- @param enabled boolean
-function Object:setEnabled(enabled)
+--- @param active boolean
+function Object:setActive(active)
     -- 状態がすでに_enabledと同じときスルー
-    if self._enabled == enabled then return end
+    if self._enabled == active then return end
 
     -- _enabledを切り替えてコールバック関数を呼び出す
-    self._enabled = enabled
+    self._enabled = active
     if self._enabled then
         self:onEnable()
     else
         self:onDisable()
     end
 end
-
--- ========== DeLuataEngine ==========
 
 --- 開始処理
 function Object:load()
@@ -128,7 +129,7 @@ function Object:draw()
 end
 
 --- オブジェクトの破棄
-function Object:Destroy()
+function Object:destroy()
     self:onDestroy()
 end
 

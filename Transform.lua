@@ -50,6 +50,7 @@ function Transform:init(gameObject, pos, rotation, scale)
     self.children = {}
 end
 
+
 -- ========== metamethod ==========
 
 function Transform:__tostring()
@@ -108,6 +109,10 @@ function Transform:addChild(childTransform)
     -- 引数が間違っている場合
     if not childTransform:is(Transform) then  -- Transform型かどうかをチェック
         error("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
+    end
+    -- 自信を登録しようとした場合
+    if childTransform == self then
+        error("Cannot add self as child")
     end
     table.insert(self.children, childTransform)
     childTransform.parent = self
@@ -172,19 +177,33 @@ function Transform:getWorldScale()
     return scale
 end
 
--- ==========CallBacks=========
-
-function Transform:onEnable()
+--- @param active boolean
+function Transform:setActive(active)
 end
 
-function Transform:onDisable()
-end
-
-function Transform:onDestroy()
+function Transform:destroy()
     -- メモリリーク防止
     self.gameObject = nil
     self.pos = nil
     self.scale = nil
+    self.children = nil
+end
+
+-- ==========CallBacks=========
+
+--- TransformクラスではonEnableコールバックは機能しません
+--- @private
+function Transform:onEnable()
+end
+
+--- TransformクラスではonDisableコールバックは機能しません
+---@private
+function Transform:onDisable()
+end
+
+--- TransformクラスではonDestroyコールバックは機能しません
+---@private
+function Transform:onDestroy()
 end
 
 

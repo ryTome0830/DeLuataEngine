@@ -4,10 +4,6 @@ local Vector2 = require("Vector2").Vector2
 local Component = require("abstruct.Component").Component
 local Transform = require("Transform").Transform
 
---- すべてのGameObjectを保存する
---- @type GameObject[]
-local gameobjects = {}
-
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
 --- 継承
@@ -21,20 +17,25 @@ GameObject.__index = GameObject
 
 --- GameObjectコンストラクタ
 --- @param name? string
+--- @param scene Scene
 --- @param pos? Vector2
 --- @param rotation? number
 --- @param scale? Vector2
 --- @return GameObject
-function GameObject.new(name, pos, rotation, scale)
+function GameObject.new(name, scene, pos, rotation, scale)
     -- エラー処理
-    if #gameobjects >= GAMEOBJECT_MAX_NUM then
+    if scene:getGameObjectNum() >= GAMEOBJECT_MAX_NUM then
         error("The maximum number of GameObjects has been reached.")
+    end
+    if scene == nil then
+        error("'scene'")
     end
 
     --- @class GameObject
     local instance = setmetatable({}, GameObject)
     instance:init(
         name,
+        scene,
         Transform.new(
             instance,
             pos or Vector2.new(),
@@ -48,12 +49,15 @@ end
 --- 初期化処理
 --- @private
 --- @param name string|nil
+--- @param scene Scene
 --- @param transform Transform
-function GameObject:init(name, transform)
+function GameObject:init(name, scene, transform)
     -- スーパークラスの初期化
     self.super:init()
 
-    self.name = name or ("GameObject"..#gameobjects)
+    self.name = name or ("GameObject"..scene:getGameObjectNum()+1)
+
+    self.scene = scene
 
     --- @private
     self.transform = transform
@@ -62,7 +66,8 @@ function GameObject:init(name, transform)
     --- @type Component[]
     self.components = {}
 
-    table.insert(gameobjects, self)
+    -- 指定されたシーンにGameObjectを登録
+    scene:addGameObject(self)
 end
 
 
@@ -78,7 +83,6 @@ end
 -- ========== DeLuataEngine ==========
 
 --- オブジェクトの初期化
---- @private
 function GameObject:load()
     for _, component in ipairs(self.components) do
         if component:isEnable() then
@@ -88,7 +92,6 @@ function GameObject:load()
 end
 
 --- オブジェクトの更新処理
---- @private
 --- @param dt number
 function GameObject:update(dt)
     if self._enabled then
@@ -103,14 +106,26 @@ end
 
 --- Gameobjectを破棄する
 function GameObject:destroy()
-    --- コールバック関数を呼び出す
-    self:onDestroy()
-    for i, obj in ipairs(gameobjects) do
+    for i, obj in ipairs(self.scene.gameObjects) do
         if obj == self then
-            table.remove(gameobjects, i)
+            table.remove(self.scene.gameObjects, i)
             break
         end
     end
+    -- Componentの削除
+    for _, component in ipairs(self.components) do
+        self:removeComponent(component.__index)
+    end
+    -- Transformの削除
+    self.transform:destroy()
+    --- コールバック関数を呼び出す
+    self:onDestroy()
+
+    -- メモリリーク防止
+    self.components = nil
+    self.scene = nil
+    self.super = nil
+    self.transform = nil
 end
 
 --- オブジェクトの有効化無効化
@@ -122,8 +137,16 @@ function GameObject:setActive(active)
     -- _enabledを切り替えてコールバック関数を呼び出す
     self._enabled = active
     if self._enabled then
+        --- Component有効化
+        for _, component in ipairs(self.components) do
+            component:setActive(true)
+        end
         self:onEnable()
     else
+        --- Componentの無効化
+        for _, component in ipairs(self.components) do
+            component:setActive(false)
+        end
         self:onDisable()
     end
 end
@@ -157,7 +180,7 @@ function GameObject:removeComponent(componentType)
    for i, component in ipairs(self.components) do
         if component.__index == componentType then
             table.remove(self.components, i)
-            component:Destroy()
+            component:destroy()
             break
         end
    end
@@ -179,61 +202,18 @@ end
 -- ==========CallBacks==========
 
 --- オブジェクトの有効化コールバック関数
---- @override
---- @private
 function GameObject:onEnable()
-    --- Component有効化
-    for _, component in ipairs(self.components) do
-        component:setEnabled(true)
-    end
 end
 
 --- オブジェクトの無効化コールバック関数
---- @override
---- @private
 function GameObject:onDisable()
-    --- Componentの無効化
-    for _, component in ipairs(self.components) do
-        component:setEnabled(false)
-    end
 end
 
 --- オブジェクトの破棄コールバック関数
---- @override
---- @private
 function GameObject:onDestroy()
-    -- Componentの削除
-    for _, component in ipairs(self.components) do
-        self:removeComponent(component.__index)
-    end
-    -- Transformの削除
-    self.transform:Destroy()
 end
-
-
--- ==========utilities==========
-
---- ゲームオブジェクトを名前で取得
---- @param objectName string
---- @return GameObject|nil
-function FindObject(objectName)
-    for _, obj in ipairs(gameobjects) do
-        if obj.name == objectName then
-            return obj
-        end
-    end
-    return nil
-end
- 
- --- すべてのゲームオブジェクトを取得
- --- @return GameObject[]
- function GetAllGameObjecs()
-    return gameobjects
- end
 
 
 return{
-    GameObject=GameObject,
-    FindObject=FindObject,
-    GetAllGameObjecs=GetAllGameObjecs
+    GameObject=GameObject
 }
