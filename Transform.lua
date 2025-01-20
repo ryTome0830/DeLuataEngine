@@ -34,6 +34,7 @@ end
 
 --- 初期化処理
 --- @private
+--- @package
 --- @param gameObject Object
 --- @param pos Vector2
 --- @param rotation number
@@ -53,12 +54,16 @@ end
 
 -- ========== metamethod ==========
 
+--- @private
+--- @package
 function Transform:__tostring()
     return string.format("Transform(pos: %s, rotation: %f, scale: %s)",
         tostring(self.pos), self.rotation, tostring(self.scale))
 end
 
 --- enableへのアクセスを制御する
+--- @private
+--- @package
 function Transform:__newindex(key, value)
     if key == "_enabled" then
         error("Transform cannot be disabled.")

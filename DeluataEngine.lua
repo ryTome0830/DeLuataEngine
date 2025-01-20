@@ -1,53 +1,41 @@
-local Engine_Env = require("DeluataEngine_env")
-local Input = require("Input").Input
-local Log = require("LogManager").Log
---local SceneManager = require("SceneManger").SceneManager
-local Transform = require("Transform").Transform
-local Vector2 = require("Vector2").Vector2
+-- エンジンの主要クラス
+Input = require("Input").Input
+--Log=Log,
+Scene = require("abstruct.Scene").Scene
+SceneManager = require("SceneManager").SceneManager
+Transform = require("Transform").Transform
+Vector2 = require("Vector2").Vector2
 
---local Animation = require("Animation").Animation
 
-return{
-    DeLuataEngine={
-        -- エンジンの主要クラス
-        Input=Input,
-        Log=Log,
-        --SceneManager=SceneManager,
-        Transform=Transform,
-        Vector2=Vector2,
+-- animationモジュール
+Animation={
 
-        
-        -- animationモジュール
-        Animation={
+}
+-- audioモジュール
+Audio={
 
-        },
-        -- audioモジュール
-        Audio={
+}
+-- componentモジュール
+Component={
 
-        },
-        -- componentモジュール
-        Component={
+}
+-- effectモジュール
+Effect={
 
-        },
-        -- effectモジュール
-        Effect={
+}
+-- functionモジュール
+Function={
 
-        },
-        -- functionモジュール
-        Function={
+}
+-- mathモジュール
+Math={
 
-        },
-        -- mathモジュール
-        Math={
+}
+-- obectモジュール
+Object={
 
-        },
-        -- obectモジュール
-        Object={
+}
+-- UIモジュール
+UI={
 
-        },
-        -- UIモジュール
-        UI={
-
-        }
-    }
 }

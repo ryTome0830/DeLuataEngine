@@ -18,6 +18,7 @@ end
 
 --- Vector2クラス初期化処理
 --- @private
+--- @package
 --- @param x number x座標(default: 0)
 --- @param y number y座標(default: 0)
 function Vector2:init(x, y)
@@ -28,6 +29,8 @@ end
 -- ========== metamethod ==========
 
 --- ベクトルの加算
+--- @private
+--- @package
 --- @param v2 Vector2 加算するベクトル
 --- @return Vector2
 function Vector2:__add(v2)
@@ -38,6 +41,8 @@ function Vector2:__add(v2)
 end
 
 --- ベクトルの減算
+--- @private
+--- @package
 --- @param v2 Vector2 減算するベクトル
 --- @return Vector2
 function Vector2:__sub(v2)
@@ -48,6 +53,8 @@ function Vector2:__sub(v2)
 end
 
 --- ベクトルの等価判定
+--- @private
+--- @package
 --- @param v2 Vector2 比較するベクトル
 --- @return boolean
 function Vector2:__eq(v2)
@@ -58,13 +65,14 @@ function Vector2:__eq(v2)
 end
 
 --- ベクトルの文字列化
+--- @private
+--- @package
 function Vector2:__tostring()
     if not self then
         error("Invalid argument for Vector2 tostring")
     end
     return string.format("Vector2(%f, %f)", self.x, self.y)
 end
-
 
 -- ========== DeLuataEngine ==========
 
@@ -74,7 +82,6 @@ end
 function Vector2:scale(scalar)
     return Vector2.new(self.x * scalar, self.y * scalar)
 end
-
 
 --- 内積
 --- @param v Vector2

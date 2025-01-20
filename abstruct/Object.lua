@@ -33,12 +33,15 @@ end
 
 -- ========== metamethod ==========
 
---- 
+--- @private
+--- @package
 --- @return string
 function Object:__tostring()
     return "Object"
 end
 
+--- @private
+--- @@package
 function Object:__newindex(key, value)
     if key == "_enabled" then
         if value == true and not self._enabled then

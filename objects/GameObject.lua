@@ -1,41 +1,37 @@
 local Engine_env = require("DeluataEngine_env")
-local Object = require("abstruct.Object").Object
-local Vector2 = require("Vector2").Vector2
 local Component = require("abstruct.Component").Component
+local Object = require("abstruct.Object").Object
 local Transform = require("Transform").Transform
+local SceneManager = require("SceneManager").SceneManager
+local Vector2 = require("Vector2").Vector2
+
+-- SceneManagerインスタンス
+local sceneManagerInstance = SceneManager.new()
 
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
 --- 継承
 --- @field super Object
 --- @field _enabled boolean
---- @field gameObject Object
 --- GameObjectメンバ
---- @
+--- @field name string
+--- @field transform Transform
+--- @field scene Scene
+--- @field components Component[]
 local GameObject = Object:extend()
 GameObject.__index = GameObject
 
 --- GameObjectコンストラクタ
 --- @param name? string
---- @param scene Scene
 --- @param pos? Vector2
 --- @param rotation? number
 --- @param scale? Vector2
 --- @return GameObject
-function GameObject.new(name, scene, pos, rotation, scale)
-    -- エラー処理
-    if scene:getGameObjectNum() >= GAMEOBJECT_MAX_NUM then
-        error("The maximum number of GameObjects has been reached.")
-    end
-    if scene == nil then
-        error("'scene'")
-    end
-
+function GameObject.new(name, pos, rotation, scale)
     --- @class GameObject
     local instance = setmetatable({}, GameObject)
     instance:init(
         name,
-        scene,
         Transform.new(
             instance,
             pos or Vector2.new(),
@@ -47,33 +43,38 @@ function GameObject.new(name, scene, pos, rotation, scale)
 end
 
 --- 初期化処理
---- @private
+--- @protected
 --- @param name string|nil
---- @param scene Scene
 --- @param transform Transform
-function GameObject:init(name, scene, transform)
+function GameObject:init(name, transform)
     -- スーパークラスの初期化
     self.super:init()
 
-    self.name = name or ("GameObject"..scene:getGameObjectNum()+1)
-
-    self.scene = scene
+    --- @private
+    --- @type string
+    self.name = name or "AnonymousGameObject"
 
     --- @private
+    --- @type Transform
     self.transform = transform
+
+    --- @private
+    --- @type Scene
+    self.scene = sceneManagerInstance:getCurrentScene()
 
     --- @private
     --- @type Component[]
     self.components = {}
 
-    -- 指定されたシーンにGameObjectを登録
-    scene:addGameObject(self)
+    if self.scene then
+        self.scene:addGameObject(self)
+    end
 end
 
 
 -- ========== metamethod ==========
 
---- 
+--- @private
 --- @return string
 function GameObject:__tostring()
     return "GameObject: "..self.name
@@ -122,10 +123,10 @@ function GameObject:destroy()
     self:onDestroy()
 
     -- メモリリーク防止
-    self.components = nil
-    self.scene = nil
     self.super = nil
     self.transform = nil
+    self.scene = nil
+    self.components = nil
 end
 
 --- オブジェクトの有効化無効化
