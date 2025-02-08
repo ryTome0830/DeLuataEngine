@@ -6,7 +6,8 @@ local SceneManager = require("SceneManager").SceneManager
 local Vector2 = require("Vector2").Vector2
 
 -- SceneManagerインスタンス
-local sceneManagerInstance = SceneManager.new()
+local SMInstance = SceneManager.new()
+-- print("GameObject: "..string.format("%s", SMInstance))
 
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
@@ -50,25 +51,25 @@ function GameObject:init(name, transform)
     -- スーパークラスの初期化
     self.super:init()
 
-    --- @private
     --- @type string
     self.name = name or "AnonymousGameObject"
 
     --- @private
+    --- @type Scene
+    self.scene = SMInstance:getCurrentScene()
+
+    --- @type string
+    self.id = self:generateUUID()
+
     --- @type Transform
     self.transform = transform
-
-    --- @private
-    --- @type Scene
-    self.scene = sceneManagerInstance:getCurrentScene()
 
     --- @private
     --- @type Component[]
     self.components = {}
 
-    if self.scene then
-        self.scene:addGameObject(self)
-    end
+    self.scene:addGameObject(self)
+    --SMInstance:registerGameObject(self)
 end
 
 
@@ -82,6 +83,16 @@ end
 
 
 -- ========== DeLuataEngine ==========
+
+--- @private
+--- @return string
+function GameObject:generateUUID()
+    local currentScene = SMInstance:getCurrentScene()
+    local uuid = string.format("%s", currentScene.gameObjectNum + 1)
+    print("uuid="..uuid)
+    return uuid
+end
+
 
 --- オブジェクトの初期化
 function GameObject:load()

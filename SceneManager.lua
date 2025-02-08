@@ -1,8 +1,6 @@
 --[[
 ScenenManagerクラス。ゲームのシーンを制御し、Sceneがあらゆるオブジェクトを管理します。
 ]]
-local Scene = require("abstruct.Scene").Scene
-
 --- @class SceneManager
 local SceneManager = {}
 SceneManager.__index = SceneManager
@@ -26,18 +24,15 @@ end
 function SceneManager:init()
     --- シーンキャッシュ
     --- @private
-    --- @type Scene[]
+    --- @type table<string, Scene>
     self.scenes = {}
 
     --- 読み込み中のシーン
     --- @private
     --- @type Scene
     self.currentScene = nil
-
-    --- コルーチン
-    --- @private
-    self.corutines = {}
 end
+
 
 -- ========== metamethod ==========
 
@@ -48,79 +43,55 @@ function SceneManager:__tostring()
 end
 
 
--- ==========DeLuataEngine==========
+-- ==========DeLuataEngine=========
 
---- Sceneの追加
---- @param scene Scene
-function SceneManager:addScene(scene)
-    self.scenes[scene.name] = scene
-end
-
---- Sceneの削除
 --- @param sceneName string
-function SceneManager:removeScene(sceneName)
-    self.scenes[sceneName] = nil
-end
-
---- Sceneの切り替え
---- @param sceneName string
-function SceneManager:changeScene(sceneName)
-    -- シーンの切り替えコールバック
-    self.currentScene:onChange()
-
-    self.currentScene = self.scenes[sceneName]
-    self.currentScene:loadObject()
-    self.currentScene:load()
-end
-
-function SceneManager:load()
-    if self.currentScene then
-        self.currentScene:loadObject()
-        self.currentScene:load()
+--- @param sceneClass Scene
+function SceneManager:registerScene(sceneName, sceneClass)
+    if sceneName and sceneClass then
+        self.scenes[sceneName] = sceneClass
     end
 end
 
---- @param dt number
-function SceneManager:update(dt)
-    -- if self.corutines then
-    --     for i, co in ipairs(self.corutines) do
-    --         if coroutine.status(co) == "suspended" then
-    --             coroutine.resume(co)
-    --         elseif coroutine.status(co) == "dead" then
-    --             table.remove(self.corutines, i)
-    --         end
-    --     end
-    -- end
-
-    self.currentScene:update(dt)
-end
-
---- 非同期にSceneの切り替え
--- --- @param sceneName string
--- function SceneManager:changeSceneAsync(sceneName)
---     local co = coroutine.create(function ()
---         self.currentScene:onChange()
---         self.currentScene = self.scenes[sceneName]
-
---         self.currentScene:loadObject()
---         coroutine.yield()
-
---         self.currentScene:load()
---         coroutine.yield()
---     end)
-
---     self.corutines = self.corutines or {}
---     table.insert(self.corutines, co)
+-- --- called GameObject:init
+-- --- @param gameObject GameObject
+-- function SceneManager:registerGameObject(gameObject)
+--     if self.currentScene then
+--         self.currentScene:addGameObject(gameObject)
+--         gameObject.scene = self.currentScene
+--     end
 -- end
 
---- Sceneの切り替え(Sceneキャッシュモード)
-
-
---- 現在のSceneを取得
 --- @return Scene
 function SceneManager:getCurrentScene()
     return self.currentScene
 end
+
+--- @param sceneName string
+function SceneManager:loadScene(sceneName)
+    if self.scenes then
+        self.currentScene = self.scenes[sceneName].new()
+        self.currentScene.name = sceneName
+        self.currentScene:load()
+    end
+end
+
+function SceneManager:updateScene(dt)
+    self.currentScene:update(dt)
+end
+
+--- @param sceneName string
+function SceneManager:changeScene(sceneName)
+    if self.scenes[sceneName] then
+        self:unloadScene()
+        self:loadScene(sceneName)
+    end
+end
+
+function SceneManager:unloadScene()
+    self.currentScene:destroy()
+end
+
 
 return{
     SceneManager=SceneManager

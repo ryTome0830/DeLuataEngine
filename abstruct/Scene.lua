@@ -7,28 +7,49 @@ local Scene = {}
 Scene.__index = Scene
 
 --- Sceneコンストラクタ
--- --- @param name string
--- --- @return Scene
--- function Scene.new(name)
---     --- @class Scene
---     local instance = setmetatable({}, Scene)
---     instance:init(name)
---     return instance
--- end
+--- @return Scene
+function Scene.new()
+    --- @class Scene
+    local instance = setmetatable({}, Scene)
 
---- Scene初期化処理
---- @private
---- @package
---- @param name string
-function Scene:init(name)
-    -- シーンの初期化処理
-    self.name = name or "Scene"
-    --- @type table<string, GameObject>
-    self.gameObjects = {}
+    instance:init()
+    return instance
 end
 
+--- Scene初期化処理
+function Scene:init()
+    --- @type string
+    self.name = nil
 
--- ==========mmetamethod==========
+    --- @type table<string, GameObject>
+    self.gameObjects = {}
+
+    --- @type integer
+    self.gameObjectNum = 1
+end
+
+--- Sceneクラスの継承
+--- @return table
+function Scene:extend()
+    -- 新しいクラスclsを作成
+    --- @class Scene
+    local cls = {}
+    -- Sceneクラスの'__'で始まるプロパティをコピー
+    for k, v in pairs(self) do
+        if k:find("__") == 1 then
+        cls[k] = v
+        end
+    end
+    -- clsのメタテーブル__indexにclsを設定
+    cls.__index = cls
+    -- 親クラスの参照を保持
+    cls.super = self
+    -- cls
+    setmetatable(cls, self)
+    return cls
+end
+
+-- ==========metamethod==========
 
 --- @private
 --- @return string
@@ -36,52 +57,74 @@ function Scene:__tostring()
     return "Scene: "..self.name
 end
 
---- GameObjectの追加
+-- ==========DeLuataEngine==========
+
+--- @private
+function Scene:instantiateObject()
+    self:onInstantiateObject()
+end
+
 --- @param gameObject GameObject
 function Scene:addGameObject(gameObject)
-    self.gameObjects[gameObject.name] = gameObject
+    self.gameObjects[gameObject.id] = gameObject
+    self.gameObjectNum = self.gameObjectNum + 1
 end
 
---- GameObjectの削除
---- @param gameObjectName string
-function Scene:removeGameObject(gameObjectName)
-    self.gameObjects[gameObjectName] = nil
-end
-
---- GameObjectの検索
---- @param gameObjectName string
---- @return GameObject
-function Scene:findGameObject(gameObjectName)
-    return self.gameObjects[gameObjectName]
-end
-
---- オブジェクトの生成
-function Scene:loadObject()
-end
-
---- Sceneのロード
+--- called SceneManager:load
 function Scene:load()
+    self:instantiateObject()
+    self:onLoad()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
     end
+    print("Scene:load")
 end
 
---- Sceneの更新
---- @param dt number
+--- called SceneManager:update
 function Scene:update(dt)
+    self:onUpdate(dt)
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:update(dt)
     end
+    print("Scene:update")
 end
 
--- ==========callback==========
-
---- シーンの切り替わり
-function Scene:onChange()
+function Scene:destroy()
+    self:onDestroy()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:destroy()
     end
+
+    self.gameObjects = nil
+    print("Scene:destroy")
 end
+
+
+
+
+-- ==========callbacks==========
+
+
+--- オブジェクトのインスタンス化
+function Scene:onInstantiateObject()
+    print("Scene:onInstantiateObject")
+end
+
+--- ユーザ定義のロード処理
+function Scene:onLoad()
+    print("Scene:onLoad")
+end
+
+--- ユーザ定義の更新処理
+function Scene:onUpdate(dt)
+    print("Scene:onUpdate")
+end
+
+--- ユーザ定義の破棄処理
+function Scene:onDestroy()
+    print("Scene:onDestroy")
+end
+
 
 return{
     Scene=Scene
