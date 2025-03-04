@@ -2,6 +2,8 @@
 ScenenManagerクラス。ゲームのシーンを制御し、Sceneがあらゆるオブジェクトを管理します。
 ]]
 --- @class SceneManager
+--- @field scenes Scene<string, Scene> 登録されたシーンを保存
+--- @field currentScene Scene 現在のロード中のシーン
 local SceneManager = {}
 SceneManager.__index = SceneManager
 

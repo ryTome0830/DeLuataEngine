@@ -3,6 +3,9 @@ Sceneクラス。シーンの定義の基底クラスです。
 すべてのゲームのオブジェクトやコンポーネントを保持します。
 ]]
 --- @class Scene
+--- @field name string シーン名
+--- @field gameObject GameObject シーンに含まれるGameObjecctの管理
+--- @field gameObjectNum integer シーンに含まれるGameObjecctの数
 local Scene = {}
 Scene.__index = Scene
 

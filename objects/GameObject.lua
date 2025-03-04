@@ -1,11 +1,17 @@
 local Engine_env = require("DeluataEngine_env")
+--- @class Component
 local Component = require("abstruct.Component").Component
+--- @class Object
 local Object = require("abstruct.Object").Object
+--- @class Transform
 local Transform = require("Transform").Transform
+--- @class SceneManager
 local SceneManager = require("SceneManager").SceneManager
+--- @class Vector2
 local Vector2 = require("Vector2").Vector2
 
 -- SceneManagerインスタンス
+--- @class SceneManager
 local SMInstance = SceneManager.new()
 -- print("GameObject: "..string.format("%s", SMInstance))
 

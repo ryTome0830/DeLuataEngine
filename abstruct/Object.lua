@@ -6,8 +6,7 @@ This class has been slightly modified for use in this project.
 This Object base class implementation was taken from SNKRX (MIT license)
 ]]
 
---- @class Object
---- @field super Object スーパークラスの参照
+--- @class Object あらゆるオブジェクトの基底クラス
 --- @field private _enabled boolean オブジェクトの有効化無向化
 local Object = {}
 Object.__index = Object
