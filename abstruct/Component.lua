@@ -7,6 +7,7 @@ Componentクラスを継承することで、独自のコンポーネントを�
 ]]
 
 local Object = require("abstruct.Object").Object
+local LogManager = require("LogManager").LogManager.new()
 
 --- このクラスは抽象クラスです。サブクラスでメソッドを実装する必要があります。
 --- @class Component:Object Component抽象クラス
@@ -21,7 +22,7 @@ Component.__index = Component
 --- Debugging function
 -- --- Componentコンストラクタ
 -- --- @private
--- --- @param gameObject Object
+-- --- @param gameObject GameObject
 -- function Component.new(gameObject)
 --     --- @class Component
 --     local instance = setmetatable({}, Component)
@@ -37,7 +38,7 @@ end
 
 --- 初期化処理
 --- @protected
---- @param gameObject Object
+--- @param gameObject GameObject
 function Component:init(gameObject, ...)
     -- スーパークラスの初期化
     self.super:init()
@@ -58,55 +59,61 @@ end
 -- ========== DeLuataEngine ==========
 
 --- Componentクラスの継承
--- --- @return table
--- function Component:extend()
---     -- 新しいクラスclsを作成
---     --- @class Component
---     local cls = {}
---     -- Objectクラスの'__'で始まるプロパティをコピー
---     for k, v in pairs(self) do
---         if k:find("__") == 1 then
---         cls[k] = v
---         end
---     end
---     -- clsのメタテーブル__indexにclsを設定
---     cls.__index = cls
---     -- 親クラスの参照を保持
---     cls.super = self
---     -- cls
---     setmetatable(cls, self)
---     return cls
--- end
+--- @return table
+function Component:extend()
+    -- 新しいクラスclsを作成
+    --- @class Component
+    local cls = {}
+    -- Objectクラスの'__'で始まるプロパティをコピー
+    for k, v in pairs(self) do
+        if k:find("__") == 1 then
+            cls[k] = v
+        end
+    end
+    -- clsのメタテーブル__indexにclsを設定
+    cls.__index = cls
+    -- 親クラスの参照を保持
+    cls.super = self
+    -- cls
+    setmetatable(cls, self)
+    return cls
+end
 
--- function Component:load()
--- end
+function Component:load()
+end
 
--- function Component:update(dt)
--- end
+function Component:update(dt)
+end
 
--- function Component:draw()
--- end
+function Component:draw()
+end
 
--- --- オブジェクトの破棄
--- function Object:Destroy()
---     self:onDestroy()
--- end
+--- オブジェクトの破棄
+function Component:destroy()
+    -- コールバック呼び出し
+    self:onDestroy()
+
+    -- メンバ初期化
+    self.gameObject = nil
+
+    -- スーパークラス初期化
+    self.super:destroy()
+
+    LogManager:logDebug("component destroied!")
+end
 
 -- ==========CallBacks==========
 
--- --- 有効化時のコールバック関数
--- function Component:onEnable()
--- end
+--- 有効化時のコールバック関数
+function Component:onEnable()
+end
 
--- --- 無効化時のコールバック関数
--- function Component:onDisable()
--- end
+--- 無効化時のコールバック関数
+function Component:onDisable()
+end
 
 --- 破棄時のコールバック関数
---- @override
 function Component:onDestroy()
-    -- メモリリーク防止
-    self.gameObject = nil
 end
 
 return{

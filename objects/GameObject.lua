@@ -6,14 +6,11 @@ local Object = require("abstruct.Object").Object
 --- @class Transform
 local Transform = require("Transform").Transform
 --- @class SceneManager
-local SceneManager = require("SceneManager").SceneManager
+local SceneManager = require("SceneManager").SceneManager.new()
 --- @class Vector2
 local Vector2 = require("Vector2").Vector2
-
--- SceneManagerインスタンス
---- @class SceneManager
-local SMInstance = SceneManager.new()
--- print("GameObject: "..string.format("%s", SMInstance))
+--- @class LogManager
+local LogManager = require("LogManager").LogManager.new()
 
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
@@ -62,7 +59,7 @@ function GameObject:init(name, transform)
 
     --- @private
     --- @type Scene
-    self.scene = SMInstance:getCurrentScene()
+    self.scene = SceneManager:getCurrentScene()
 
     --- @type string
     self.id = self:generateUUID()
@@ -76,6 +73,8 @@ function GameObject:init(name, transform)
 
     self.scene:addGameObject(self)
     --SMInstance:registerGameObject(self)
+
+    LogManager:logDebug("GameObject inited!")
 end
 
 
@@ -93,9 +92,9 @@ end
 --- @private
 --- @return string
 function GameObject:generateUUID()
-    local currentScene = SMInstance:getCurrentScene()
+    local currentScene = SceneManager:getCurrentScene()
     local uuid = string.format("%s", currentScene.gameObjectNum + 1)
-    print("uuid="..uuid)
+    LogManager:logDebug("uuid="..uuid)
     return uuid
 end
 
@@ -136,14 +135,17 @@ function GameObject:destroy()
     end
     -- Transformの削除
     self.transform:destroy()
-    --- コールバック関数を呼び出す
+
+    --- コールバック呼び出し
     self:onDestroy()
 
-    -- メモリリーク防止
-    self.super = nil
+    -- メンバ初期化
     self.transform = nil
     self.scene = nil
     self.components = nil
+
+    -- スーパークラス初期化
+    self.super:destroy()
 end
 
 --- オブジェクトの有効化無効化
@@ -175,16 +177,19 @@ function GameObject:addComponent(componentType, ...)
     -- Component以外をアタッチ仕様とした場合のエラー
     --if not componentType:is(Component) then
     if componentType.__index ~= Component then
-        error("The argument type is wrong! addComponent only takes an object of type Component as an argument!")
+        --error("The argument type is wrong! addComponent only takes an object of type Component as an argument!")
+        LogManager:logError("The argument type is wrong! addComponent only takes an object of type Component as an argument!")
     end
     -- Transformをアタッチしようとした場合のエラー処理
     if componentType.__index == Transform then
-        error("Transform already exists on this GameObject")
+        --error("Transform already exists on this GameObject")
+        LogManager:logError("Transform already exists on this GameObject")
     end
     -- Componentの重複チェック
     for _, existingComponent in ipairs(self.components) do
         if existingComponent.__index == componentType.__index then
-            error("Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
+            --error("Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
+            LogManager:logError("Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
         end
     end
     -- Componentをインスタンス化

@@ -1,5 +1,6 @@
 local Component = require("abstruct.Component").Component
 local Vector2 = require("Vector2").Vector2
+local logManager = require("LogManager").LogManager.new()
 
 --- @class Transform:Component Transformクラスオブジェクトの位置、回転、スケールを定義します
 --- 継承
@@ -16,7 +17,7 @@ local Transform = Component:extend()
 Transform.__index = Transform
 
 --- Transformコンストラクタ
---- @param gameObject Object アタッチするオブジェクト
+--- @param gameObject GameObject アタッチするオブジェクト
 --- @param pos? Vector2|nil 親オブジェクトに対する相対位置
 --- @param rotation? number|nil 物体の回転
 --- @param scale? Vector2|nil オブジェクトのスケール
@@ -35,7 +36,7 @@ end
 --- 初期化処理
 --- @private
 --- @package
---- @param gameObject Object
+--- @param gameObject GameObject
 --- @param pos Vector2
 --- @param rotation number
 --- @param scale Vector2
@@ -49,6 +50,7 @@ function Transform:init(gameObject, pos, rotation, scale)
     self.scale = scale
     self.parent = nil
     self.children = {}
+
 end
 
 
@@ -66,7 +68,8 @@ end
 --- @package
 function Transform:__newindex(key, value)
     if key == "_enabled" then
-        error("Transform cannot be disabled.")
+        --error("Transform cannot be disabled.")
+        logManager:logError("Transform cannot be disabled.")
     else
         rawset(self, key, value)
     end
@@ -81,7 +84,9 @@ function Transform:setPosition(pos)
     -- 引数が間違っている場合
     if type(pos) ~= "table" or type(pos.x) ~= "number" or type(pos.y) ~= "number" then
         -- エラー処理
-        error("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
+        --error("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
+        logManager:logError("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
+        return
     end
     self.pos = pos
 end
@@ -91,7 +96,8 @@ end
 function Transform:setRotation(rotation)
     -- 引数が間違っている場合
     if type(rotation) ~= "number" then
-        error("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
+        --error("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
+        logManager:logError("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
         return
     end
     self.rotation = rotation
@@ -103,7 +109,9 @@ function Transform:setScale(scale)
     -- 引数が間違っている場合
     if type(scale) ~= "table" or type(scale.x) ~= "number" or type(scale.y) ~= "number" then
         -- エラー処理
-        error("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
+        --error("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
+        logManager:logError("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
+        return
     end
     self.scale = scale
 end
@@ -113,11 +121,13 @@ end
 function Transform:addChild(childTransform)
     -- 引数が間違っている場合
     if not childTransform:is(Transform) then  -- Transform型かどうかをチェック
-        error("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
+        --error("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
+        logManager:logError("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
     end
     -- 自信を登録しようとした場合
     if childTransform == self then
-        error("Cannot add self as child")
+        --error("Cannot add self as child")
+        logManager:logError("Cannot add self as child")
     end
     table.insert(self.children, childTransform)
     childTransform.parent = self
@@ -187,11 +197,15 @@ function Transform:setActive(active)
 end
 
 function Transform:destroy()
-    -- メモリリーク防止
     self.gameObject = nil
     self.pos = nil
     self.scale = nil
     self.children = nil
+
+    -- スーパークラス初期化
+    self.super:destroy()
+
+    logManager:logDebug("transform destroied")
 end
 
 -- ==========CallBacks=========

@@ -24,7 +24,6 @@ Object.__index = Object
 --- 初期化処理
 --- @protected
 function Object:init()
-    --print("Object:init called")
     --- @private
     self._enabled = true
 end
@@ -67,7 +66,7 @@ function Object:extend()
     -- Objectクラスの'__'で始まるプロパティをコピー
     for k, v in pairs(self) do
         if k:find("__") == 1 then
-        cls[k] = v
+            cls[k] = v
         end
     end
     -- clsのメタテーブル__indexにclsを設定
@@ -132,6 +131,7 @@ end
 
 --- オブジェクトの破棄
 function Object:destroy()
+    -- コールバック呼び出し
     self:onDestroy()
 end
 

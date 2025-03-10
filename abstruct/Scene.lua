@@ -2,6 +2,9 @@
 Sceneクラス。シーンの定義の基底クラスです。
 すべてのゲームのオブジェクトやコンポーネントを保持します。
 ]]
+
+local LogManager = require("LogManager").LogManager.new()
+
 --- @class Scene
 --- @field name string シーン名
 --- @field gameObject GameObject シーンに含まれるGameObjecctの管理
@@ -56,9 +59,9 @@ end
 
 --- @private
 --- @return string
-function Scene:__tostring()
-    return "Scene: "..self.name
-end
+-- function Scene:__tostring()
+--     return "Scene: "..self.name
+-- end
 
 -- ==========DeLuataEngine==========
 
@@ -80,7 +83,7 @@ function Scene:load()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
     end
-    print("Scene:load")
+    LogManager:logDebug("Scene:load")
 end
 
 --- called SceneManager:update
@@ -89,7 +92,7 @@ function Scene:update(dt)
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:update(dt)
     end
-    print("Scene:update")
+    LogManager:logDebug("Scene:update")
 end
 
 function Scene:destroy()
@@ -98,8 +101,8 @@ function Scene:destroy()
         gameObject:destroy()
     end
 
-    self.gameObjects = nil
-    print("Scene:destroy")
+    self.gameObjects = {}
+    LogManager:logDebug("Scene:destroy")
 end
 
 
@@ -110,22 +113,18 @@ end
 
 --- オブジェクトのインスタンス化
 function Scene:onInstantiateObject()
-    print("Scene:onInstantiateObject")
 end
 
 --- ユーザ定義のロード処理
 function Scene:onLoad()
-    print("Scene:onLoad")
 end
 
 --- ユーザ定義の更新処理
 function Scene:onUpdate(dt)
-    print("Scene:onUpdate")
 end
 
 --- ユーザ定義の破棄処理
 function Scene:onDestroy()
-    print("Scene:onDestroy")
 end
 
 
