@@ -3,8 +3,6 @@ Sceneクラス。シーンの定義の基底クラスです。
 すべてのゲームのオブジェクトやコンポーネントを保持します。
 ]]
 
-local LogManager = require("LogManager").LogManager.new()
-
 --- @class Scene
 --- @field name string シーン名
 --- @field gameObject GameObject シーンに含まれるGameObjecctの管理
@@ -31,7 +29,7 @@ function Scene:init()
     self.gameObjects = {}
 
     --- @type integer
-    self.gameObjectNum = 1
+    self.gameObjectNum = 0
 end
 
 --- Sceneクラスの継承
@@ -59,9 +57,9 @@ end
 
 --- @private
 --- @return string
--- function Scene:__tostring()
---     return "Scene: "..self.name
--- end
+function Scene:__tostring()
+    return "Scene: "..self.name
+end
 
 -- ==========DeLuataEngine==========
 
@@ -83,7 +81,6 @@ function Scene:load()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
     end
-    LogManager:logDebug("Scene:load")
 end
 
 --- called SceneManager:update
@@ -92,7 +89,6 @@ function Scene:update(dt)
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:update(dt)
     end
-    LogManager:logDebug("Scene:update")
 end
 
 function Scene:destroy()
@@ -102,7 +98,6 @@ function Scene:destroy()
     end
 
     self.gameObjects = {}
-    LogManager:logDebug("Scene:destroy")
 end
 
 

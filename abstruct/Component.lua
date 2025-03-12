@@ -7,7 +7,6 @@ Componentクラスを継承することで、独自のコンポーネントを�
 ]]
 
 local Object = require("abstruct.Object").Object
-local LogManager = require("LogManager").LogManager.new()
 
 --- このクラスは抽象クラスです。サブクラスでメソッドを実装する必要があります。
 --- @class Component:Object Component抽象クラス
@@ -98,8 +97,6 @@ function Component:destroy()
 
     -- スーパークラス初期化
     self.super:destroy()
-
-    LogManager:logDebug("component destroied!")
 end
 
 -- ==========CallBacks==========

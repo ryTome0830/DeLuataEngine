@@ -1,8 +1,6 @@
 --[[
 ScenenManagerクラス。ゲームのシーンを制御し、Sceneがあらゆるオブジェクトを管理します。
 ]]
-local LogManager = require("LogManager").LogManager.new()
-
 --- @class SceneManager
 --- @field scenes Scene<string, Scene> 登録されたシーンを保存
 --- @field currentScene Scene 現在のロード中のシーン
@@ -13,6 +11,7 @@ SceneManager.__index = SceneManager
 local SceneManagerInstance = nil
 
 --- SceneManagerコンストラクタ
+--- @private
 --- @return SceneManager
 function SceneManager.new()
     if SceneManagerInstance == nil then
@@ -55,7 +54,7 @@ function SceneManager:registerScene(sceneName, sceneClass)
     if sceneName and sceneClass then
         self.scenes[sceneName] = sceneClass
     end
-    LogManager:logDebug(sceneClass)
+    --LogManager:logDebug(sceneClass)
 end
 
 -- --- called GameObject:init
@@ -77,9 +76,10 @@ function SceneManager:loadScene(sceneName)
     if self.scenes then
         self.currentScene = self.scenes[sceneName].new()
         self.currentScene.name = sceneName
+        LogManager:logDebug(self.currentScene.name)
         self.currentScene:load()
     end
-    LogManager:logWarning(self.currentScene)
+    LogManager:logInfo(self.currentScene)
 end
 
 function SceneManager:updateScene(dt)
@@ -92,14 +92,16 @@ function SceneManager:changeScene(sceneName)
         self:unloadScene()
         self:loadScene(sceneName)
     end
-    LogManager:logDebug(self.scenes)
+    --LogManager:logDebug(self.scenes)
 end
 
 function SceneManager:unloadScene()
     self.currentScene:destroy()
 end
 
+--- グローバルスコープ化
+_G.SceneManager = SceneManager.new()
 
-return{
-    SceneManager=SceneManager
-}
+-- return{
+--     SceneManager=SceneManager
+-- }

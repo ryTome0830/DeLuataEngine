@@ -29,6 +29,7 @@ local Colors = {
 }
 
 --- コンストラクタ
+--- @private
 --- @return LogManager
 function LogManager.new()
     -- インスタンスがなければ生成
@@ -100,23 +101,39 @@ function LogManager:log(message, color, loglevel)
     print(color .. formattedMessage .. reset)
 end
 
-
+--- ログレベル1のログを出力
 --- @param message any
 function LogManager:logDebug(message)
-    self:log(message, Colors.WHITE, LogLevels.DEBUG)
+    self:log(message, Colors.RESET, LogLevels.DEBUG)
 end
 
+--- Logレベル2のログを出力
+--- @param message any
+function LogManager:logInfo(message)
+    self:log(message, Colors.WHITE, LogLevels.INFO)
+end
+
+--- Logレベル3のログを出力
 --- @param message any
 function LogManager:logWarning(message)
     self:log(message, Colors.YELLOW, LogLevels.WARNING)
 end
 
+--- Logレベル4のログを出力
 --- @param message any
 function LogManager:logError(message)
     self:log(message, Colors.RED, LogLevels.ERROR)
 end
 
+--- Logレベル5のログを出力
+--- @param message any
+function LogManager:logFatal(message)
+    self:log(message, Colors.RED, LogLevels.FATAL)
+end
 
-return{
-    LogManager=LogManager
-}
+--- グローバルスコープ化
+_G.LogManager = LogManager.new()
+
+-- return{
+--     LogManager=LogManager
+-- }

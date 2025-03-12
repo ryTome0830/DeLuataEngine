@@ -5,12 +5,8 @@ local Component = require("abstruct.Component").Component
 local Object = require("abstruct.Object").Object
 --- @class Transform
 local Transform = require("Transform").Transform
---- @class SceneManager
-local SceneManager = require("SceneManager").SceneManager.new()
 --- @class Vector2
 local Vector2 = require("Vector2").Vector2
---- @class LogManager
-local LogManager = require("LogManager").LogManager.new()
 
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
@@ -72,9 +68,6 @@ function GameObject:init(name, transform)
     self.components = {}
 
     self.scene:addGameObject(self)
-    --SMInstance:registerGameObject(self)
-
-    LogManager:logDebug("GameObject inited!")
 end
 
 
@@ -94,7 +87,6 @@ end
 function GameObject:generateUUID()
     local currentScene = SceneManager:getCurrentScene()
     local uuid = string.format("%s", currentScene.gameObjectNum + 1)
-    LogManager:logDebug("uuid="..uuid)
     return uuid
 end
 

@@ -1,6 +1,5 @@
 local Component = require("abstruct.Component").Component
 local Vector2 = require("Vector2").Vector2
-local logManager = require("LogManager").LogManager.new()
 
 --- @class Transform:Component Transformクラスオブジェクトの位置、回転、スケールを定義します
 --- 継承
@@ -69,7 +68,7 @@ end
 function Transform:__newindex(key, value)
     if key == "_enabled" then
         --error("Transform cannot be disabled.")
-        logManager:logError("Transform cannot be disabled.")
+        LogManager:logError("Transform cannot be disabled.")
     else
         rawset(self, key, value)
     end
@@ -85,7 +84,7 @@ function Transform:setPosition(pos)
     if type(pos) ~= "table" or type(pos.x) ~= "number" or type(pos.y) ~= "number" then
         -- エラー処理
         --error("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
-        logManager:logError("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
+        LogManager:logError("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
         return
     end
     self.pos = pos
@@ -97,7 +96,7 @@ function Transform:setRotation(rotation)
     -- 引数が間違っている場合
     if type(rotation) ~= "number" then
         --error("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
-        logManager:logError("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
+        LogManager:logError("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
         return
     end
     self.rotation = rotation
@@ -110,7 +109,7 @@ function Transform:setScale(scale)
     if type(scale) ~= "table" or type(scale.x) ~= "number" or type(scale.y) ~= "number" then
         -- エラー処理
         --error("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
-        logManager:logError("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
+        LogManager:logError("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
         return
     end
     self.scale = scale
@@ -122,12 +121,12 @@ function Transform:addChild(childTransform)
     -- 引数が間違っている場合
     if not childTransform:is(Transform) then  -- Transform型かどうかをチェック
         --error("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
-        logManager:logError("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
+        LogManager:logError("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
     end
     -- 自信を登録しようとした場合
     if childTransform == self then
         --error("Cannot add self as child")
-        logManager:logError("Cannot add self as child")
+        LogManager:logError("Cannot add self as child")
     end
     table.insert(self.children, childTransform)
     childTransform.parent = self
@@ -204,8 +203,6 @@ function Transform:destroy()
 
     -- スーパークラス初期化
     self.super:destroy()
-
-    logManager:logDebug("transform destroied")
 end
 
 -- ==========CallBacks=========

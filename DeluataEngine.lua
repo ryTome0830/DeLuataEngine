@@ -1,8 +1,8 @@
-DeLuataEngine={    -- エンジンの主要クラス
+require("SceneManager")
+require("LogManager")
+_G.DeLuataEngine={    -- エンジンの主要クラス
     Input = require("Input").Input,
-    LogManager = require("LogManager").LogManager,
     Scene = require("abstruct.Scene").Scene,
-    SceneManager = require("SceneManager").SceneManager,
     Transform = require("Transform").Transform,
     Vector2 = require("Vector2").Vector2,
 
