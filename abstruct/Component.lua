@@ -32,6 +32,7 @@ Component.__index = Component
 --- Componentコンストラクタ
 --- @param gameObject GameObject
 --- @vararg any コンポーネントの初期化に必要な引数
+--- --@return Component
 function Component.new(gameObject, ...)
 end
 

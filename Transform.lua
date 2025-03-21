@@ -1,11 +1,14 @@
+--- @class Component
 local Component = require("abstruct.Component").Component
+--- @class Vector2
 local Vector2 = require("Vector2").Vector2
+
+
 
 --- @class Transform:Component Transformクラスオブジェクトの位置、回転、スケールを定義します
 --- 継承
 --- @field super Component
---- @field private gameObject Object
---- @field private _enabled boolean
+--- @field private _gameObject GameObject
 --- Transformメンバ
 --- @field pos Vector2 二次元平面座標
 --- @field rotation number 回転
@@ -15,11 +18,12 @@ local Vector2 = require("Vector2").Vector2
 local Transform = Component:extend()
 Transform.__index = Transform
 
+
 --- Transformコンストラクタ
 --- @param gameObject GameObject アタッチするオブジェクト
---- @param pos? Vector2|nil 親オブジェクトに対する相対位置
---- @param rotation? number|nil 物体の回転
---- @param scale? Vector2|nil オブジェクトのスケール
+--- @param pos Vector2 親オブジェクトに対する相対位置
+--- @param rotation number 物体の回転
+--- @param scale Vector2 オブジェクトのスケール
 function Transform.new(gameObject, pos, rotation, scale)
     --- @class Transform
     local instance = setmetatable({}, Transform)
@@ -34,7 +38,6 @@ end
 
 --- 初期化処理
 --- @private
---- @package
 --- @param gameObject GameObject
 --- @param pos Vector2
 --- @param rotation number
@@ -43,36 +46,42 @@ function Transform:init(gameObject, pos, rotation, scale)
     -- スーパークラスの初期化
     self.super:init(gameObject)
     --- @private
-    self.gameObject = gameObject
+    self._gameObject = gameObject
     self.pos = pos
     self.rotation = rotation
     self.scale = scale
     self.parent = nil
     self.children = {}
-
 end
 
 
 -- ========== metamethod ==========
 
 --- @private
---- @package
 function Transform:__tostring()
     return string.format("Transform(pos: %s, rotation: %f, scale: %s)",
         tostring(self.pos), self.rotation, tostring(self.scale))
 end
 
---- enableへのアクセスを制御する
 --- @private
---- @package
 function Transform:__newindex(key, value)
+    -- _enabledを変更する時
     if key == "_enabled" then
-        --error("Transform cannot be disabled.")
         LogManager:logError("Transform cannot be disabled.")
+        return
+    elseif key == "scale" then
+        if not value.__index == Vector2 then
+            return
+        end
+        if value.x == 0 and value.y == 0 then
+            LogManager:logWarning("Scale cannot be zero.")
+            return
+        end
     else
         rawset(self, key, value)
     end
 end
+
 
 
 -- ========== DeLuataEngine ==========
@@ -120,12 +129,10 @@ end
 function Transform:addChild(childTransform)
     -- 引数が間違っている場合
     if not childTransform:is(Transform) then  -- Transform型かどうかをチェック
-        --error("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
         LogManager:logError("'Transform.addChild' requires 'Transform' for the argument type, but another type is specified.")
     end
-    -- 自信を登録しようとした場合
+    -- 自身を登録しようとした場合
     if childTransform == self then
-        --error("Cannot add self as child")
         LogManager:logError("Cannot add self as child")
     end
     table.insert(self.children, childTransform)
@@ -149,7 +156,7 @@ end
 function Transform:getChild()
     local gameObjects = {}
     for _, child in ipairs(self.children) do
-        table.insert(gameObjects, child.gameObject)
+        table.insert(gameObjects, child._gameObject)
     end
     return gameObjects
 end
@@ -196,7 +203,7 @@ function Transform:setActive(active)
 end
 
 function Transform:destroy()
-    self.gameObject = nil
+    self._gameObject = nil
     self.pos = nil
     self.scale = nil
     self.children = nil

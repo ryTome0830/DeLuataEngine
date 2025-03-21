@@ -3,10 +3,17 @@ local LogManager = {}
 LogManager.__index = LogManager
 
 --- シングルトンオブジェクト
+--- @class LogManager
 local singleton_object = nil;
 
 --- ログレベル
---- @enum LogLevels
+--- @alias LogLevels
+--- | 1 # DEBUG
+--- | 2 # INFO
+--- | 3 # WARNING
+--- | 4 # ERROR
+--- | 5 # FATAL
+
 local LogLevels = {
     DEBUG = 1,
     INFO = 2,
@@ -15,7 +22,6 @@ local LogLevels = {
     FATAL = 5
 }
 
---- カラー
 --- @enum Colors
 local Colors = {
     RESET = "\027[0m",
@@ -39,6 +45,14 @@ function LogManager.new()
         instance:init()
 
         singleton_object = instance
+
+        -- シングルトンオブジェクトの再代入を防ぐ
+        setmetatable(singleton_object, {
+            __newindex = function(table, key, value)
+                error("LogManager is a singleton and cannot be modified.", 2)
+            end,
+            __index = LogManager
+        })
     end
     return singleton_object
 end
@@ -49,7 +63,7 @@ function LogManager:init()
     --- @type boolean
     self._enabled = true
 
-    --- @type integer
+    --- @type LogLevels
     self._logLevel = LogLevels.DEBUG
 end
 
@@ -68,12 +82,7 @@ function LogManager:setActive(enable)
     self._enabled = enable
 end
 
---- @overload fun(logLevel:1)
---- @overload fun(logLevel:2)
---- @overload fun(logLevel:3)
---- @overload fun(logLevel:4)
---- @overload fun(logLevel:5)
---- @param logLevel integer 1 (DEBUG), 2 (INFO), 3 (WARNING), 4 (ERROR), 5 (FATAL)
+--- @param logLevel LogLevels
 function LogManager:setLogLevel(logLevel)
     if logLevel > #LogLevels then
         return
@@ -81,12 +90,12 @@ function LogManager:setLogLevel(logLevel)
     self._logLevel = logLevel
 end
 
-
 --- @private
 --- @param message string
 --- @param color string
 --- @param loglevel integer
-function LogManager:log(message, color, loglevel)
+--- @param stack? string
+function LogManager:log(message, color, loglevel, stack)
     if not self._enabled then
         return
     end
@@ -98,7 +107,13 @@ function LogManager:log(message, color, loglevel)
     local now = os.date("%Y-%m-%d %H:%M:%S")
     local reset = Colors.RESET
     local formattedMessage = string.format("[%s] [%s] %s", now, loglevel, message)
-    print(color .. formattedMessage .. reset)
+
+    if stack then
+        print(color .. formattedMessage .. reset.."\n"..stack)
+    else
+        print(color .. formattedMessage .. reset)
+    end
+
 end
 
 --- ログレベル1のログを出力
@@ -122,18 +137,14 @@ end
 --- Logレベル4のログを出力
 --- @param message any
 function LogManager:logError(message)
-    self:log(message, Colors.RED, LogLevels.ERROR)
+    self:log(message, Colors.RED, LogLevels.ERROR, debug.traceback("stack traceback:", 1))
 end
 
 --- Logレベル5のログを出力
 --- @param message any
 function LogManager:logFatal(message)
-    self:log(message, Colors.RED, LogLevels.FATAL)
+    self:log(message, Colors.RED, LogLevels.FATAL, debug.traceback("stack traceback", 1))
 end
 
 --- グローバルスコープ化
 _G.LogManager = LogManager.new()
-
--- return{
---     LogManager=LogManager
--- }

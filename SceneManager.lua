@@ -1,6 +1,22 @@
 --[[
 ScenenManagerクラス。ゲームのシーンを制御し、Sceneがあらゆるオブジェクトを管理します。
 ]]
+
+--- @class GameObject
+local GameObject = require("objects.GameObject").GameObject
+
+--- @class Template
+local Template = require("abstruct.Template").Template
+
+--- @class Transform
+local Transform = require("Transform").Transform
+
+--- @class Vector2
+local Vector2 = require("Vector2").Vector2
+
+
+
+
 --- @class SceneManager
 --- @field scenes Scene<string, Scene> 登録されたシーンを保存
 --- @field currentScene Scene 現在のロード中のシーン
@@ -48,23 +64,49 @@ end
 
 -- ==========DeLuataEngine=========
 
+--- 指定したTemplateをSceneに追加します。
+--- @param template Template
+--- @param pos? Vector2
+--- @param rotation? number
+--- @param parent? GameObject
+--- @return GameObject|nil
+--- @overload fun(self: SceneManager, template: Template): GameObject|nil
+--- @overload fun(self: SceneManager, template: Template, pos: Vector2): GameObject|nil
+--- @overload fun(self: SceneManager, template: Template, pos: Vector2, rotation: number): GameObject|nil
+--- @overload fun(self: SceneManager, template: Template, pos: Vector2, rotation: number, parent: GameObject): GameObject|nil
+function SceneManager:instantiate(template, pos, rotation, parent)
+    if not template then
+        LogManager:logError("SceneManager:instantiate: template cannot be nil")
+        return nil
+    end
+    if not template:is(Template) then
+        LogManager:logError("'template' must be of type Template")
+        return nil
+    end
+
+    --- @type GameObject
+    local newGameObject = template:clone(pos, rotation, parent)
+    if not newGameObject then
+        LogManager:logError("Instantiation failed")
+        return nil
+    end
+
+    return newGameObject
+end
+
+
+--- @return string
+function SceneManager:generateUUID()
+    return string.format("%s", self.currentScene.gameObjectNum + 1)
+end
+
 --- @param sceneName string
 --- @param sceneClass Scene
 function SceneManager:registerScene(sceneName, sceneClass)
     if sceneName and sceneClass then
         self.scenes[sceneName] = sceneClass
     end
-    --LogManager:logDebug(sceneClass)
 end
-
--- --- called GameObject:init
--- --- @param gameObject GameObject
--- function SceneManager:registerGameObject(gameObject)
---     if self.currentScene then
---         self.currentScene:addGameObject(gameObject)
---         gameObject.scene = self.currentScene
---     end
--- end
 
 --- @return Scene
 function SceneManager:getCurrentScene()
@@ -92,7 +134,6 @@ function SceneManager:changeScene(sceneName)
         self:unloadScene()
         self:loadScene(sceneName)
     end
-    --LogManager:logDebug(self.scenes)
 end
 
 function SceneManager:unloadScene()
@@ -101,7 +142,3 @@ end
 
 --- グローバルスコープ化
 _G.SceneManager = SceneManager.new()
-
--- return{
---     SceneManager=SceneManager
--- }

@@ -110,7 +110,8 @@ end
 --- @param v Vector2
 --- @return number
 function Vector2:distance(v)
-    return (self - v):length()
+    local lv = Vector2.new(self.x - v.x, self.y - v.y)
+    return lv:length()
 end
 
 --- ベクトルの回転

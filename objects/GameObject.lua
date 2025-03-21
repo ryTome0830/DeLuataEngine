@@ -1,4 +1,3 @@
-local Engine_env = require("DeluataEngine_env")
 --- @class Component
 local Component = require("abstruct.Component").Component
 --- @class Object
@@ -8,18 +7,21 @@ local Transform = require("Transform").Transform
 --- @class Vector2
 local Vector2 = require("Vector2").Vector2
 
+
+
 --- ゲームオブジェクトを司るクラス
 --- @class GameObject:Object
---- 継承
+--- 親クラスメンバ
 --- @field super Object
 --- @field _enabled boolean
 --- GameObjectメンバ
 --- @field name string
---- @field transform Transform
 --- @field scene Scene
+--- @field transform Transform
 --- @field components Component[]
 local GameObject = Object:extend()
 GameObject.__index = GameObject
+
 
 --- GameObjectコンストラクタ
 --- @param name? string
@@ -58,7 +60,7 @@ function GameObject:init(name, transform)
     self.scene = SceneManager:getCurrentScene()
 
     --- @type string
-    self.id = self:generateUUID()
+    self.id = nil
 
     --- @type Transform
     self.transform = transform
@@ -71,25 +73,18 @@ function GameObject:init(name, transform)
 end
 
 
+
 -- ========== metamethod ==========
 
 --- @private
 --- @return string
 function GameObject:__tostring()
-    return "GameObject: "..self.name
+    return "GameObject: "..self.name.." [uuid="..self.id.."]"
 end
+
 
 
 -- ========== DeLuataEngine ==========
-
---- @private
---- @return string
-function GameObject:generateUUID()
-    local currentScene = SceneManager:getCurrentScene()
-    local uuid = string.format("%s", currentScene.gameObjectNum + 1)
-    return uuid
-end
-
 
 --- オブジェクトの初期化
 function GameObject:load()
@@ -167,25 +162,29 @@ end
 --- @param componentType Component
 function GameObject:addComponent(componentType, ...)
     -- Component以外をアタッチ仕様とした場合のエラー
-    --if not componentType:is(Component) then
     if componentType.__index ~= Component then
-        --error("The argument type is wrong! addComponent only takes an object of type Component as an argument!")
-        LogManager:logError("The argument type is wrong! addComponent only takes an object of type Component as an argument!")
+        LogManager:logError(self..": The argument type is wrong! addComponent only takes an object of type Component as an argument!")
+        return
     end
     -- Transformをアタッチしようとした場合のエラー処理
     if componentType.__index == Transform then
-        --error("Transform already exists on this GameObject")
-        LogManager:logError("Transform already exists on this GameObject")
+        LogManager:logError(self..": Transform already exists on this GameObject")
+        return
     end
     -- Componentの重複チェック
     for _, existingComponent in ipairs(self.components) do
         if existingComponent.__index == componentType.__index then
-            --error("Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
-            LogManager:logError("Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
+            LogManager:logError(self..": Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
+            return
         end
     end
     -- Componentをインスタンス化
-    local componentInstance = componentType.new(self, ...)
+    local componentInstance = nil
+    if ... then
+        componentInstance = componentType.new(self, unpack(...))
+    else
+        componentInstance = componentType.new(self)
+    end
     table.insert(self.components, componentInstance)
 end
 
@@ -210,9 +209,10 @@ function GameObject:getComponent(componentType)
             return component
         end
     end
-    --error("Component not found: "..tostring(componentType))
     return nil
 end
+
+
 
 -- ==========CallBacks==========
 

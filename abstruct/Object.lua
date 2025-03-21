@@ -47,7 +47,7 @@ function Object:__newindex(key, value)
         elseif value == false and self._enabled then
             self:onDisable()
         elseif value ~= true and value ~= false then
-            error("The argument is wrong! '_enabled' must be a boolean value!")
+            LogManager:logError("The argument is wrong! '_enabled' must be a boolean value!")
         end
         rawset(self, key, value)
     else

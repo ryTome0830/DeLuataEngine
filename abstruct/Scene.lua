@@ -10,6 +10,7 @@ Sceneクラス。シーンの定義の基底クラスです。
 local Scene = {}
 Scene.__index = Scene
 
+
 --- Sceneコンストラクタ
 --- @return Scene
 function Scene.new()
@@ -63,9 +64,8 @@ end
 
 -- ==========DeLuataEngine==========
 
---- @private
-function Scene:instantiateObject()
-    self:onInstantiateObject()
+function Scene:loadInitObject()
+    self:onLoadInitObject()
 end
 
 --- @param gameObject GameObject
@@ -76,7 +76,7 @@ end
 
 --- called SceneManager:load
 function Scene:load()
-    self:instantiateObject()
+    self:loadInitObject()
     self:onLoad()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
@@ -102,12 +102,10 @@ end
 
 
 
-
 -- ==========callbacks==========
 
-
---- オブジェクトのインスタンス化
-function Scene:onInstantiateObject()
+--- 初期オブジェクトの読み込み
+function Scene:onLoadInitObject()
 end
 
 --- ユーザ定義のロード処理
