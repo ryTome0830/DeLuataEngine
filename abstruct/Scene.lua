@@ -5,7 +5,7 @@ Sceneクラス。シーンの定義の基底クラスです。
 
 --- @class Scene
 --- @field name string シーン名
---- @field gameObject GameObject シーンに含まれるGameObjecctの管理
+--- @field gameObjects table<string, GameObject> シーンに含まれるGameObjecctの管理
 --- @field gameObjectNum integer シーンに含まれるGameObjecctの数
 local Scene = {}
 Scene.__index = Scene
@@ -64,26 +64,36 @@ end
 
 -- ==========DeLuataEngine==========
 
+--- オーバーライド禁止
 function Scene:loadInitObject()
     self:onLoadInitObject()
 end
 
---- @param gameObject GameObject
-function Scene:addGameObject(gameObject)
-    self.gameObjects[gameObject.id] = gameObject
-    self.gameObjectNum = self.gameObjectNum + 1
+--- @return string
+function Scene:generateUUID()
+    return string.format("%s", self.gameObjectNum + 1)
 end
 
---- called SceneManager:load
+--- オーバーライド禁止
+--- @param gameObject GameObject
+function Scene:addGameObject(gameObject)
+    gameObject.id = self:generateUUID()
+    self.gameObjects[gameObject.id] = gameObject
+    self.gameObjectNum = self.gameObjectNum + 1
+    --LogManager:logInfo("addObjects: "..tostring(gameObject))
+end
+
+--- オーバーライド禁止
 function Scene:load()
     self:loadInitObject()
     self:onLoad()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
     end
+    --LogManager:logInfo("loaded: "..tostring(self))
 end
 
---- called SceneManager:update
+--- オーバーライド禁止
 function Scene:update(dt)
     self:onUpdate(dt)
     for _, gameObject in pairs(self.gameObjects) do
@@ -91,6 +101,7 @@ function Scene:update(dt)
     end
 end
 
+--- オーバーライド禁止
 function Scene:destroy()
     self:onDestroy()
     for _, gameObject in pairs(self.gameObjects) do

@@ -70,18 +70,18 @@ function Transform:__newindex(key, value)
         LogManager:logError("Transform cannot be disabled.")
         return
     elseif key == "scale" then
-        if not value.__index == Vector2 then
+        if not (getmetatable(value) == Vector2) then
+            LogManager:logError("Scale mus be a Vector2 instance.")
             return
         end
-        if value.x == 0 and value.y == 0 then
-            LogManager:logWarning("Scale cannot be zero.")
+        if value.x == 0 or value.y == 0 then
+            LogManager:logWarning("Scale cannot be zero. Resetting to (1, 1).")
+            value = Vector2.new(1, 1)
             return
         end
-    else
-        rawset(self, key, value)
     end
+    rawset(self, key, value)
 end
-
 
 
 -- ========== DeLuataEngine ==========
@@ -92,7 +92,6 @@ function Transform:setPosition(pos)
     -- 引数が間違っている場合
     if type(pos) ~= "table" or type(pos.x) ~= "number" or type(pos.y) ~= "number" then
         -- エラー処理
-        --error("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
         LogManager:logError("'Transform.setPosition' requires 'Vector2' for the argument type, but another type is specified.")
         return
     end
@@ -104,7 +103,6 @@ end
 function Transform:setRotation(rotation)
     -- 引数が間違っている場合
     if type(rotation) ~= "number" then
-        --error("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
         LogManager:logError("'Transform.setRotation' requires 'number' for the argument type, but another type is specified.")
         return
     end
@@ -117,7 +115,6 @@ function Transform:setScale(scale)
     -- 引数が間違っている場合
     if type(scale) ~= "table" or type(scale.x) ~= "number" or type(scale.y) ~= "number" then
         -- エラー処理
-        --error("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
         LogManager:logError("'Transform.setScale' requires 'Vector2' for the argument type, but another type is specified.")
         return
     end
@@ -205,7 +202,8 @@ end
 function Transform:destroy()
     self._gameObject = nil
     self.pos = nil
-    self.scale = nil
+    --self.scale = nil
+    rawset(self, "scale", nil)
     self.children = nil
 
     -- スーパークラス初期化

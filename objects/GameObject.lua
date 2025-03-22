@@ -83,7 +83,6 @@ function GameObject:__tostring()
 end
 
 
-
 -- ========== DeLuataEngine ==========
 
 --- オブジェクトの初期化
@@ -161,27 +160,27 @@ end
 --- Componentを追加する
 --- @param componentType Component
 function GameObject:addComponent(componentType, ...)
-    -- Component以外をアタッチ仕様とした場合のエラー
-    if componentType.__index ~= Component then
-        LogManager:logError(self..": The argument type is wrong! addComponent only takes an object of type Component as an argument!")
+    -- Component以外をアタッチしようとした場合のエラー
+    if not componentType:is(Component) then
+        LogManager:logError(tostring(self)..": The argument type is wrong! addComponent only takes an object of type Component as an argument!")
         return
     end
     -- Transformをアタッチしようとした場合のエラー処理
-    if componentType.__index == Transform then
-        LogManager:logError(self..": Transform already exists on this GameObject")
+    if componentType:is(Transform) then
+        LogManager:logError(tostring(self)..": Transform already exists on this GameObject")
         return
     end
     -- Componentの重複チェック
     for _, existingComponent in ipairs(self.components) do
         if existingComponent.__index == componentType.__index then
-            LogManager:logError(self..": Component of type " .. tostring(componentType.__index) .. " already exists on this GameObject.")
+            LogManager:logError(tostring(self)..": Component of type " .. tostring(componentType) .. " already exists on this GameObject.")
             return
         end
     end
     -- Componentをインスタンス化
-    local componentInstance = nil
+    local componentInstance
     if ... then
-        componentInstance = componentType.new(self, unpack(...))
+        componentInstance = componentType.new(self, table.unpack({...}))
     else
         componentInstance = componentType.new(self)
     end
@@ -212,6 +211,21 @@ function GameObject:getComponent(componentType)
     return nil
 end
 
+
+--- 子を追加
+--- @param child GameObject
+function GameObject:addChild(child)
+    if not child:is(GameObject) then
+        LogManager:logError("'GameObject.addChild' requires 'GameObject' for the argument type, but another type is specified.")
+        return
+    end
+    -- 自身を登録しようとした場合
+    if child == self then
+        LogManager:logError("Cannot add self as child")
+    end
+
+    self.transform:addChild(child.transform)
+end
 
 
 -- ==========CallBacks==========

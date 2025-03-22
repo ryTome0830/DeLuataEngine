@@ -95,10 +95,10 @@ function SceneManager:instantiate(template, pos, rotation, parent)
 end
 
 
---- @return string
-function SceneManager:generateUUID()
-    return string.format("%s", self.currentScene.gameObjectNum + 1)
-end
+-- --- @return string
+-- function SceneManager:generateUUID()
+--     return string.format("%s", self.currentScene.gameObjectNum + 1)
+-- end
 
 --- @param sceneName string
 --- @param sceneClass Scene
@@ -118,14 +118,14 @@ function SceneManager:loadScene(sceneName)
     if self.scenes then
         self.currentScene = self.scenes[sceneName].new()
         self.currentScene.name = sceneName
-        LogManager:logDebug(self.currentScene.name)
         self.currentScene:load()
     end
-    LogManager:logInfo(self.currentScene)
+    --LogManager:logInfo("load: "..tostring(self.currentScene))
 end
 
 function SceneManager:updateScene(dt)
     self.currentScene:update(dt)
+    --LogManager:logInfo("update: "..tostring(self.currentScene))
 end
 
 --- @param sceneName string
@@ -134,10 +134,12 @@ function SceneManager:changeScene(sceneName)
         self:unloadScene()
         self:loadScene(sceneName)
     end
+    --LogManager:logInfo("change: "..tostring(self.currentScene))
 end
 
 function SceneManager:unloadScene()
     self.currentScene:destroy()
+    --LogManager:logInfo("unloaded: "..tostring(self.currentScene))
 end
 
 --- グローバルスコープ化

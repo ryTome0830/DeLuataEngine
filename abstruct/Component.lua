@@ -52,7 +52,7 @@ end
 --- 
 --- @return string
 function Component:__tostring()
-    return "Component"
+    return "Component: "
 end
 
 

@@ -17,14 +17,10 @@ _G.DeLuataEngine={    -- エンジンの主要クラス
     },
     -- componentモジュール
     Component={
-
+        Component=require("abstruct.Component").Component
     },
     -- effectモジュール
     Effect={
-
-    },
-    -- functionモジュール
-    Function={
 
     },
     -- mathモジュール

@@ -8,15 +8,15 @@ local singleton_object = nil;
 
 --- ログレベル
 --- @alias LogLevels
---- | 1 # DEBUG
---- | 2 # INFO
+--- | 1 # INFO
+--- | 2 # DEBUG
 --- | 3 # WARNING
 --- | 4 # ERROR
 --- | 5 # FATAL
 
 local LogLevels = {
-    DEBUG = 1,
-    INFO = 2,
+    INFO = 1,
+    DEBUG = 2,
     WARNING = 3,
     ERROR = 4,
     FATAL = 5
@@ -63,8 +63,9 @@ function LogManager:init()
     --- @type boolean
     self._enabled = true
 
+    --- @private
     --- @type LogLevels
-    self._logLevel = LogLevels.DEBUG
+    self._logLevel = LogLevels.INFO
 end
 
 -- ========== metamethod ==========
@@ -84,9 +85,6 @@ end
 
 --- @param logLevel LogLevels
 function LogManager:setLogLevel(logLevel)
-    if logLevel > #LogLevels then
-        return
-    end
     self._logLevel = logLevel
 end
 
@@ -100,6 +98,7 @@ function LogManager:log(message, color, loglevel, stack)
         return
     end
 
+    -- ログメソッドの強度が現在のログレベルよりも小さいとき出力を停止
     if loglevel < self._logLevel then
         return
     end
@@ -116,16 +115,16 @@ function LogManager:log(message, color, loglevel, stack)
 
 end
 
---- ログレベル1のログを出力
---- @param message any
-function LogManager:logDebug(message)
-    self:log(message, Colors.RESET, LogLevels.DEBUG)
-end
-
---- Logレベル2のログを出力
+--- Logレベル1のログを出力
 --- @param message any
 function LogManager:logInfo(message)
-    self:log(message, Colors.WHITE, LogLevels.INFO)
+    self:log(message, Colors.RESET, LogLevels.INFO)
+end
+
+--- ログレベル2のログを出力
+--- @param message any
+function LogManager:logDebug(message)
+    self:log(message, Colors.WHITE, LogLevels.DEBUG)
 end
 
 --- Logレベル3のログを出力
@@ -137,13 +136,54 @@ end
 --- Logレベル4のログを出力
 --- @param message any
 function LogManager:logError(message)
-    self:log(message, Colors.RED, LogLevels.ERROR, debug.traceback("stack traceback:", 1))
+    self:log(message, Colors.RED, LogLevels.ERROR, debug.traceback("DeLuataEngine", 3))
 end
 
 --- Logレベル5のログを出力
 --- @param message any
 function LogManager:logFatal(message)
-    self:log(message, Colors.RED, LogLevels.FATAL, debug.traceback("stack traceback", 1))
+    self:log(message, Colors.RED, LogLevels.FATAL, debug.traceback("DeLuataEngine", 3))
+end
+
+--- GameObjectデバッグ出力
+--- @param gameObject GameObject
+function LogManager:dumpGameObject(gameObject)
+    -- component出力
+    local components = ""
+    for _, component in pairs(gameObject.components) do
+        components = components..tostring(component)
+    end
+
+    -- children出力
+    local children = ""
+    for _, child in ipairs(gameObject.transform.children) do
+        children = children..tostring(child)
+    end
+
+
+    -- GameObject: <name> [uuid=<id>]
+    -- Transform(pos: (<x>, <y>), rotation: <rotation>, scale: (<x>, <y>))
+    -- Components{
+    -- }
+    -- Children{
+    -- }
+    self:logDebug(string.format(
+[[
+%s
+    %s
+    Components{
+        %s
+    }
+    Children{
+        %s
+    }
+]],
+gameObject,
+gameObject.transform,
+components,
+children
+        )
+    )
 end
 
 --- グローバルスコープ化
