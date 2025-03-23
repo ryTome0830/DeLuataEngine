@@ -1,10 +1,10 @@
---- @class Component
+--- @type Component
 local Component = require("abstruct.Component").Component
---- @class Object
+--- @type Object
 local Object = require("abstruct.Object").Object
---- @class Transform
+--- @type Transform
 local Transform = require("Transform").Transform
---- @class Vector2
+--- @type Vector2
 local Vector2 = require("Vector2").Vector2
 
 

@@ -1,7 +1,10 @@
 --[[
 SpriteAnimation
 ]]
+--- @type Animation
 local Animation = require("animations.Animation").Animation
+
+
 
 --- @class SpriteAnimation
 local SpriteAnimation = Animation:extend()

@@ -1,5 +1,7 @@
+--- @type Component
 local Component = require("abstruct.Component").Component
-local Vector2 = require("Vector2").Vector2
+
+
 
 --- @class Collision:Component
 --- 継承

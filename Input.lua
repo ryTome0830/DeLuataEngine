@@ -1,4 +1,7 @@
+--- @type Vector2
 local Vector2 = require("Vector2").Vector2
+
+
 --- @class Input
 local Input = {}
 Input.__index = Input

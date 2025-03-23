@@ -1,12 +1,13 @@
 --[[
 Componentクラスは、あらゆるコンポーネントの基底クラスです。
-
 このクラスは、GameObjectにアタッチして、ゲームオブジェクトの動作を拡張するために使用されます。
-
 Componentクラスを継承することで、独自のコンポーネントを作成することができます。
 ]]
 
+--- @type Object
 local Object = require("abstruct.Object").Object
+
+
 
 --- このクラスは抽象クラスです。サブクラスでメソッドを実装する必要があります。
 --- @class Component:Object Component抽象クラス

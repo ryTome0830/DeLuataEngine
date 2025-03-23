@@ -1,6 +1,6 @@
---- @class Component
+--- @type Component
 local Component = require("abstruct.Component").Component
---- @class Vector2
+--- @type Vector2
 local Vector2 = require("Vector2").Vector2
 
 

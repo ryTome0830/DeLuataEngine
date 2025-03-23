@@ -2,19 +2,8 @@
 ScenenManagerクラス。ゲームのシーンを制御し、Sceneがあらゆるオブジェクトを管理します。
 ]]
 
---- @class GameObject
-local GameObject = require("objects.GameObject").GameObject
-
---- @class Template
+--- @types Template
 local Template = require("abstruct.Template").Template
-
---- @class Transform
-local Transform = require("Transform").Transform
-
---- @class Vector2
-local Vector2 = require("Vector2").Vector2
-
-
 
 
 --- @class SceneManager

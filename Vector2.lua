@@ -123,6 +123,18 @@ function Vector2:rotate(angle)
     return Vector2.new(self.x * cos - self.y * sin, self.x * sin + self.y * cos)
 end
 
+--- ベクトルを正規化
+--- @return Vector2
+function Vector2:normalized()
+    local len = self:length()
+    if len > 0 then
+        return Vector2.new(self.x / len, self.y / len)
+    else
+        LogManager:logError("Cannot normalize zero-length vector.")
+        return self
+    end
+end
+
 --- Vector2のクローンを作成
 --- @return Vector2
 function Vector2:clone()

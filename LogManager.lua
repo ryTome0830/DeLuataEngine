@@ -41,18 +41,8 @@ function LogManager.new()
     -- インスタンスがなければ生成
     if singleton_object == nil then
         --- @class LogManager
-        local instance = setmetatable({}, LogManager)
-        instance:init()
-
-        singleton_object = instance
-
-        -- シングルトンオブジェクトの再代入を防ぐ
-        setmetatable(singleton_object, {
-            __newindex = function(table, key, value)
-                error("LogManager is a singleton and cannot be modified.", 2)
-            end,
-            __index = LogManager
-        })
+        singleton_object = setmetatable({}, LogManager)
+        singleton_object:init()
     end
     return singleton_object
 end
@@ -156,7 +146,7 @@ function LogManager:dumpGameObject(gameObject)
 
     -- children出力
     local children = ""
-    for _, child in ipairs(gameObject.transform.children) do
+    for _, child in ipairs(gameObject.transform:getChild()) do
         children = children..tostring(child)
     end
 
@@ -184,6 +174,21 @@ components,
 children
         )
     )
+end
+
+--- tableを展開して出力する
+--- @param t table
+--- @param indent? string
+function LogManager:ShowTable(t, indent)
+    indent = indent or ""
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            print(indent.."["..tostring(k).."] = table:")
+            self:ShowTable(v, indent.."  ")
+        else
+            print(indent.."["..tostring(k).."] = "..tostring(v))
+        end
+    end
 end
 
 --- グローバルスコープ化

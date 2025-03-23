@@ -1,8 +1,10 @@
 --[[
 MoveAnimation
 ]]
---- @class Animation
+--- @type Animation
 local Animation = require("animations.Animation").Animation
+
+
 
 --- @class MoveAnimation
 local MoveAnimation = Animation:extend()

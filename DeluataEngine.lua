@@ -1,8 +1,10 @@
+require("functions.Functions")
 require("SceneManager")
 require("LogManager")
 _G.DeLuataEngine={    -- エンジンの主要クラス
     Input = require("Input").Input,
     Scene = require("abstruct.Scene").Scene,
+    Template = require("abstruct.Template").Template,
     Transform = require("Transform").Transform,
     Vector2 = require("Vector2").Vector2,
 
@@ -24,8 +26,9 @@ _G.DeLuataEngine={    -- エンジンの主要クラス
 
     },
     -- mathモジュール
-    Math={
-        
+    Maths={
+        Math = require("math.Math").Math,
+        Random = require("math.Random").Random
     },
     -- obectモジュール
     Object={
@@ -33,6 +36,6 @@ _G.DeLuataEngine={    -- エンジンの主要クラス
     },
     -- UIモジュール
     UI={
-        
+
     }
 }

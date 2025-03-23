@@ -24,9 +24,9 @@ end
 
 function Template:init()
     self.super:init()
-    self.name = ""
+    self.name = "AnonymousTemplate"
 
-    --- @type {class: Component, args: any[]}[]
+    --- @type {componentType: Component, args: any[]}[]
     self.components = {}
 
     --- @type {template: Template, pos: Vector2, rotation: number}[]
@@ -38,7 +38,8 @@ end
 --- @param parent? GameObject|nil
 --- @return GameObject
 function Template:clone(pos, rotation, parent)
-    local gameObject = GameObject.new(self.name.."(clone)")
+    self:init()
+    local gameObject = GameObject.new(tostring(self.name).."(clone)")
     gameObject.transform.pos = pos or Vector2.new()
     gameObject.transform.rotation = rotation or 0
 
@@ -47,7 +48,7 @@ function Template:clone(pos, rotation, parent)
     end
 
     for _, component in ipairs(self.components) do
-        gameObject:addComponent(component.class, unpack(component.args))
+        gameObject:addComponent(component.componentType, table.unpack(component.args))
     end
 
     for _, child in ipairs(self.children) do
