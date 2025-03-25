@@ -179,12 +179,12 @@ end
 --- tableを展開して出力する
 --- @param t table
 --- @param indent? string
-function LogManager:ShowTable(t, indent)
+function LogManager:showTable(t, indent)
     indent = indent or ""
     for k, v in pairs(t) do
         if type(v) == "table" then
             print(indent.."["..tostring(k).."] = table:")
-            self:ShowTable(v, indent.."  ")
+            self:showTable(v, indent.."  ")
         else
             print(indent.."["..tostring(k).."] = "..tostring(v))
         end

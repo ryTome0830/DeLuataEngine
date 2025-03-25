@@ -1,8 +1,8 @@
 require("functions.Functions")
+require("InputManager")
 require("SceneManager")
 require("LogManager")
-_G.DeLuataEngine={    -- エンジンの主要クラス
-    Input = require("Input").Input,
+_G.DeLuataEngine={
     Scene = require("abstruct.Scene").Scene,
     Template = require("abstruct.Template").Template,
     Transform = require("Transform").Transform,
@@ -39,3 +39,15 @@ _G.DeLuataEngine={    -- エンジンの主要クラス
 
     }
 }
+
+function LoadEngine()
+    
+end
+
+function UpdateEngine(dt)
+
+end
+
+function LateUpdateEngine(dt)
+    InputManager:update()
+end

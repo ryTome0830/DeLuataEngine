@@ -7,7 +7,7 @@ This Object base class implementation was taken from SNKRX (MIT license)
 ]]
 
 --- @class Object あらゆるオブジェクトの基底クラス
---- @field private _enabled boolean オブジェクトの有効化無向化
+--- @field protected _enabled boolean オブジェクトの有効化無向化
 local Object = {}
 Object.__index = Object
 
@@ -24,7 +24,7 @@ Object.__index = Object
 --- 初期化処理
 --- @protected
 function Object:init()
-    --- @private
+    --- @protected
     self._enabled = true
 end
 
@@ -123,6 +123,7 @@ end
 --- 更新処理
 --- @param dt number フレーム時間love.update(dt)
 function Object:update(dt)
+    print("Object: update")
 end
 
 --- 描画処理
