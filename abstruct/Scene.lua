@@ -64,11 +64,6 @@ end
 
 -- ==========DeLuataEngine==========
 
---- オーバーライド禁止
-function Scene:loadInitObject()
-    self:onLoadInitObject()
-end
-
 --- @return string
 function Scene:generateUUID()
     return string.format("%s", self.gameObjectNum + 1)
@@ -80,17 +75,15 @@ function Scene:addGameObject(gameObject)
     gameObject.id = self:generateUUID()
     self.gameObjects[gameObject.id] = gameObject
     self.gameObjectNum = self.gameObjectNum + 1
-    --LogManager:logInfo("addObjects: "..tostring(gameObject))
 end
 
 --- オーバーライド禁止
 function Scene:load()
-    self:loadInitObject()
+    self:onLoadInitObject()
     self:onLoad()
     for _, gameObject in pairs(self.gameObjects) do
         gameObject:load()
     end
-    --LogManager:logInfo("loaded: "..tostring(self))
 end
 
 --- オーバーライド禁止
