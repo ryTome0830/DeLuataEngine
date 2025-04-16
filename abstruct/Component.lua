@@ -13,9 +13,9 @@ local Object = require("abstruct.Object").Object
 --- @class Component:Object Component抽象クラス
 --- 継承
 --- @field super Object
---- @field private _enabled boolean
+--- @field protected _enabled boolean
 --- Componentメンバ
---- @field private gameObject Object アタッチされるオブジェクト
+--- @field protected _gameObject GameObject アタッチされるオブジェクト
 local Component = Object:extend()
 Component.__index = Component
 
@@ -40,11 +40,11 @@ end
 --- 初期化処理
 --- @protected
 --- @param gameObject GameObject
-function Component:init(gameObject, ...)
+function Component:init(gameObject)
     -- スーパークラスの初期化
     self.super:init()
     --- @private
-    self.gameObject = gameObject
+    self._gameObject = gameObject
 end
 
 
@@ -95,7 +95,7 @@ function Component:destroy()
     self:onDestroy()
 
     -- メンバ初期化
-    self.gameObject = nil
+    self._gameObject = nil
 
     -- スーパークラス初期化
     self.super:destroy()

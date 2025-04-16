@@ -24,13 +24,39 @@ end
 --- Scene初期化処理
 function Scene:init()
     --- @type string
-    self.name = nil
+    self.name = "AnonymousScene"
 
     --- @type table<string, GameObject>
     self.gameObjects = {}
 
     --- @type integer
     self.gameObjectNum = 0
+
+    --- @type love.World
+    self.world = love.physics.newWorld(
+        EngineConfig.Var.X_GRAVITY * EngineConfig.Const.WORLD_SCALE,
+        EngineConfig.Var.Y_GRAVITY * EngineConfig.Const.WORLD_SCALE,
+        EngineConfig.Var.WORLD_PHYSICS
+    )
+
+    self.world:setCallbacks(
+        function(fixtureA, fixtureB, contact)
+            --- @type Collision
+            local userDataA = fixtureA:getUserData()
+            --- @type Collision
+            local userDataB = fixtureB:getUserData()
+            userDataA:onCollisionEnter(userDataB, contact)
+            userDataB:onCollisionEnter(userDataA, contact)
+        end,
+        function(fixtureA, fixtureB, contact)
+            --- @type Collision
+            local userDataA = fixtureA:getUserData()
+            --- @type Collision
+            local userDataB = fixtureB:getUserData()
+            userDataA:onCollisionExit(userDataB, contact)
+            userDataB:onCollisionExit(userDataA, contact)
+        end
+    )
 end
 
 --- Sceneクラスの継承
@@ -102,6 +128,7 @@ function Scene:destroy()
     end
 
     self.gameObjects = {}
+    self.world = nil
 end
 
 

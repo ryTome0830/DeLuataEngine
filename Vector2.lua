@@ -22,8 +22,7 @@ end
 --- @param x number x座標(default: 0)
 --- @param y number y座標(default: 0)
 function Vector2:init(x, y)
-    self.x = x
-    self.y = y
+    self:set(x, y)
 end
 
 -- ========== metamethod ==========
@@ -134,6 +133,22 @@ function Vector2:normalized()
         return self
     end
 end
+
+--- Vector2(x, y)を設定
+--- @param x number
+--- @param y number
+function Vector2:set(x, y)
+    self.x = x
+    self.y = y
+end
+
+--- Vector2(x, y)を取得
+--- @return number
+--- @return number
+function Vector2:get()
+    return self.x, self.y
+end
+
 
 --- Vector2のクローンを作成
 --- @return Vector2

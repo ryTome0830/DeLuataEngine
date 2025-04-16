@@ -74,14 +74,14 @@ end
 --- 配列からランダムに選択
 --- @param t table
 --- @return any
-function Random:choise(t)
+function Random:choice(t)
     return t[math.random(#t)]
 end
 
 --- 重み付き選択
 --- @param weighedTable table<any, number>
 --- @return any
-function Random:weighedChoise(weighedTable)
+function Random:weightedChoice(weighedTable)
     local totalWeight = 0
     for _, weight in pairs(weighedTable) do
         totalWeight = totalWeight + weight

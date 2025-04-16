@@ -83,12 +83,6 @@ function SceneManager:instantiate(template, pos, rotation, parent)
     return newGameObject
 end
 
-
--- --- @return string
--- function SceneManager:generateUUID()
---     return string.format("%s", self.currentScene.gameObjectNum + 1)
--- end
-
 --- @param sceneName string
 --- @param sceneClass Scene
 function SceneManager:registerScene(sceneName, sceneClass)

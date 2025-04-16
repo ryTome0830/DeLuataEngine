@@ -21,9 +21,9 @@ Transform.__index = Transform
 
 --- Transformコンストラクタ
 --- @param gameObject GameObject アタッチするオブジェクト
---- @param pos Vector2 親オブジェクトに対する相対位置
---- @param rotation number 物体の回転
---- @param scale Vector2 オブジェクトのスケール
+--- @param pos? Vector2|nil 親オブジェクトに対する相対位置
+--- @param rotation? number|nil 物体の回転
+--- @param scale? Vector2|nil オブジェクトのスケール
 function Transform.new(gameObject, pos, rotation, scale)
     --- @class Transform
     local instance = setmetatable({}, Transform)

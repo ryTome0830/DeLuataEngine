@@ -55,8 +55,7 @@ function InputManager:update()
         self.prevMouseButtons[button] = value
     end
 
-    self.wheelDelta.x = 0
-    self.wheelDelta.y = 0
+    self.wheelDelta:set(0, 0)
 end
 
 
@@ -176,13 +175,11 @@ function InputManager:onMouseReleased(button)
 end
 --- @private
 function InputManager:onMouseMoved(x, y)
-    self.mousePosition.x = x
-    self.mousePosition.y = y
+    self.mousePosition:set(x, y)
 end
 --- @private
 function InputManager:onWheelMoved(x, y)
-    self.wheelDelta.x = x
-    self.wheelDelta.y = y
+    self.wheelDelta:set(x, y)
 end
 
 

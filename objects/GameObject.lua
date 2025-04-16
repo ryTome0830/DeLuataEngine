@@ -17,6 +17,7 @@ local Vector2 = require("Vector2").Vector2
 --- GameObjectメンバ
 --- @field name string
 --- @field scene Scene
+--- @field id string
 --- @field transform Transform
 --- @field components Component[]
 local GameObject = Object:extend()
@@ -34,12 +35,7 @@ function GameObject.new(name, pos, rotation, scale)
     local instance = setmetatable({}, GameObject)
     instance:init(
         name,
-        Transform.new(
-            instance,
-            pos or Vector2.new(),
-            rotation or 0,
-            scale or Vector2.new(1, 1)
-        )
+        Transform.new(instance, pos, rotation, scale)
     )
     return instance
 end
@@ -157,6 +153,14 @@ function GameObject:setActive(active)
     end
 end
 
+--- Componentの一括追加
+--- @param componentTypes {component: Component, args: table}[]
+function GameObject:addComponents(componentTypes)
+    for _, componentPack in pairs(componentTypes) do
+        self:addComponent(componentPack.component, componentPack.args)
+    end
+end
+
 --- Componentを追加する
 --- @param componentType Component
 function GameObject:addComponent(componentType, ...)
@@ -170,12 +174,15 @@ function GameObject:addComponent(componentType, ...)
         LogManager:logError(tostring(self)..": Transform already exists on this GameObject")
         return
     end
-    -- Componentの重複チェック
+    -- Componentの重複、依存チェック
     for _, existingComponent in ipairs(self.components) do
+        local existCollision, existRigidBody = false, false
         if existingComponent.__index == componentType.__index then
             LogManager:logError(tostring(self)..": Component of type " .. tostring(componentType) .. " already exists on this GameObject.")
             return
         end
+        -- RigidBodyとCollisionの依存チェック
+
     end
     -- Componentをインスタンス化
     local componentInstance
@@ -200,11 +207,12 @@ function GameObject:removeComponent(componentType)
 end
 
 --- 指定したComponentを取得する
---- @param componentType Component
---- @return Component|nil
+--- @generic T: Component
+--- @param componentType T
+--- @return T|nil
 function GameObject:getComponent(componentType)
     for _, component in ipairs(self.components) do
-        if component.__index == componentType then
+        if component:is(componentType) then
             return component
         end
     end
@@ -227,6 +235,19 @@ function GameObject:addChild(child)
     self.transform:addChild(child.transform)
 end
 
+
+--- 親を設定
+--- @param parent GameObject
+function GameObject:setParent(parent)
+    if not parent:is(GameObject) then
+        LogManager:logError("'GameObject.setParent' requires 'GameObject' for the argument type, but another type is specified.")
+    end
+    -- 自身を登録しようとした場合
+    if parent == self then
+        LogManager:logError("Cannot add self as parent")
+    end
+    parent:addChild(self)
+end
 
 -- ==========CallBacks==========
 
